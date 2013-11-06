@@ -47,6 +47,10 @@ console.log('listening on port 3000');
   To commit changes to a session you must explicitly invoke `this.session.save()`,
   which performs the Set-Cookie.
 
+### Session#sid
+
+  15-byte session-unique identifier.
+
 ## License
 
   MIT

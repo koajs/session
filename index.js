@@ -4,6 +4,7 @@
  */
 
 var debug = require('debug')('koa-session');
+var uid = require('uid2');
 
 /**
  * Initialize session middleware with `opts`:
@@ -51,6 +52,7 @@ module.exports = function(opts){
 function Session(ctx, obj) {
   obj = obj || {};
   this._ctx = ctx;
+  this.sid = uid(15);
   for (var k in obj) this[k] = obj[k];
 }
 

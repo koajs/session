@@ -52,8 +52,8 @@ module.exports = function(opts){
 function Session(ctx, obj) {
   obj = obj || {};
   this._ctx = ctx;
-  this.sid = uid(15);
   for (var k in obj) this[k] = obj[k];
+  this.sid = obj.sid || uid(15);
 }
 
 /**

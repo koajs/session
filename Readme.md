@@ -33,12 +33,19 @@ app.listen(3000);
 console.log('listening on port 3000');
 ```
 
-## Options
+## API
+
+### Options
 
   The cookie name is controlled by the `key` option, which defaults
   to "koa:sess". All other options are passed to `ctx.cookie.get()` and
   `ctx.cookie.set()` allowing you to control security, domain, path,
   and signing among other settings.
+
+### Session#save()
+
+  To commit changes to a session you must explicitly invoke `this.session.save()`,
+  which performs the Set-Cookie.
 
 ## License
 

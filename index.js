@@ -27,8 +27,10 @@ module.exports = function(opts){
       var sess = this.cookies.get(key, opts);
       this.sessionOptions = opts;
       this.sessionKey = key;
+      var isNew = true;
 
       if (sess) {
+        isNew = false;
         debug('parse %s', sess);
         this.session = new Session(this, JSON.parse(sess));
       } else {
@@ -37,6 +39,10 @@ module.exports = function(opts){
       }
 
       yield next;
+
+      if (!this.session.saved && isNew) {
+        this.session.save();
+      }
     }
   }
 };
@@ -89,6 +95,7 @@ Session.prototype.save = function(){
   var opts = ctx.sessionOptions;
   var json = JSON.stringify(this);
 
+  this.saved = true;
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
 };

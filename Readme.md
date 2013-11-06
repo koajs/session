@@ -33,6 +33,12 @@ app.listen(3000);
 console.log('listening on port 3000');
 ```
 
+## Semantics
+
+  This module provides "guest" sessions, meaning any visitor will have a session,
+  authenticated or not. If a session is _new_ a Set-Cookie will be produced regardless
+  of populating the session.
+
 ## API
 
 ### Options

@@ -41,6 +41,7 @@ module.exports = function(opts){
       yield next;
 
       if (!this.session.saved && isNew) {
+        debug('auto-saving new session');
         this.session.save();
       }
     }

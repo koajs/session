@@ -1,0 +1,21 @@
+{
+  "name": "koa-session",
+  "description": "Koa cookie session middleware",
+  "repository": "koajs/session",
+  "version": "1.0.0",
+  "keywords": [
+    "koa",
+    "middleware",
+    "session"
+  ],
+  "files": [
+    "index.js"
+  ],
+  "devDependencies": {
+    "koa": "0.0.1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "debug": "*"
+  }
+}

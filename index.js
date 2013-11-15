@@ -31,18 +31,16 @@ module.exports = function(opts){
 
   return function(next){
     return function *(){
-      var sess = this.cookies.get(key, opts);
+      var json = this.cookies.get(key, opts);
       this.sessionOptions = opts;
       this.sessionKey = key;
-      var isNew = true;
 
-      if (sess) {
-        isNew = false;
-        debug('parse %s', sess);
-        sess = this.session = new Session(this, JSON.parse(sess));
+      if (json) {
+        debug('parse %s', json);
+        var sess = this.session = new Session(this, JSON.parse(json));
       } else {
         debug('new session');
-        sess = this.session = new Session(this);
+        var sess = this.session = new Session(this);
       }
 
       yield next;
@@ -51,7 +49,7 @@ module.exports = function(opts){
       if (!this.session) return sess.remove();
 
       // save new sessions
-      if (!sess._saved && isNew) {
+      if (!sess._saved && sess.isNew) {
         debug('auto-saving new session');
         sess.save();
       }
@@ -71,7 +69,8 @@ function Session(ctx, obj) {
   obj = obj || {};
   this._ctx = ctx;
   for (var k in obj) this[k] = obj[k];
-  this.sid = obj.sid || uid(15);
+  if (!this.sid) this.isNew = true;
+  if (!this.sid) this.sid = uid(15);
 }
 
 /**
@@ -87,6 +86,7 @@ Session.prototype.toJSON = function(){
   var obj = {};
 
   Object.keys(this).forEach(function(key){
+    if ('isNew' == key[0]) return;
     if ('_' == key[0]) return;
     obj[key] = self[key];
   });

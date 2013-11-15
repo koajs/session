@@ -19,7 +19,14 @@ var uid = require('uid2');
 module.exports = function(opts){
   opts = opts || {};
 
+  // key
   var key = opts.key || 'koa:sess';
+
+  // defaults
+  if (null == opts.overwrite) opts.overwrite = true;
+  if (null == opts.httpOnly) opts.httpOnly = true;
+  if (null == opts.signed) opts.signed = true;
+
   debug('session options %j', opts);
 
   return function(next){

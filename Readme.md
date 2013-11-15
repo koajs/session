@@ -57,6 +57,10 @@ console.log('listening on port 3000');
 
   To remove a session you may invoke `this.session.remove()`, or simply set `this.session` to `null`.
 
+### Session#isNew
+
+  Returns __true__ if the session is new.
+
 ### Session#sid
 
   15-byte session-unique identifier.

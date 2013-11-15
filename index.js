@@ -40,8 +40,8 @@ module.exports = function(opts){
 
       yield next;
 
-      // clear session
-      if (!this.session) return sess.clear();
+      // remove session
+      if (!this.session) return sess.remove();
 
       // save new sessions
       if (!sess._saved && isNew) {
@@ -106,17 +106,17 @@ Session.prototype.save = function(){
 };
 
 /**
- * Clear the session.
+ * Remove the session.
  *
  * @api public
  */
 
-Session.prototype.clear = function(){
+Session.prototype.remove = function(){
   var ctx = this._ctx;
   var opts = ctx.sessionOptions;
   var key = ctx.sessionKey;
 
-  debug('clear');
+  debug('remove');
   opts.expires = new Date(0);
   ctx.cookies.set(key, '', opts);
 };

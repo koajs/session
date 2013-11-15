@@ -110,7 +110,7 @@ Session.prototype.changed = function(prev){
  * Save session changes by
  * performing a Set-Cookie.
  *
- * @api public
+ * @api private
  */
 
 Session.prototype.save = function(){
@@ -126,7 +126,7 @@ Session.prototype.save = function(){
 /**
  * Remove the session.
  *
- * @api public
+ * @api private
  */
 
 Session.prototype.remove = function(){

@@ -47,15 +47,6 @@ console.log('listening on port 3000');
   `ctx.cookie.set()` allowing you to control security, domain, path,
   and signing among other settings.
 
-### Session#save()
-
-  To commit changes to a session you must explicitly invoke `this.session.save()`,
-  which performs the Set-Cookie.
-
-### Session#remove()
-
-  To remove a session you may invoke `this.session.remove()`, or simply set `this.session` to `null`.
-
 ### Session#isNew
 
   Returns __true__ if the session is new.
@@ -63,6 +54,14 @@ console.log('listening on port 3000');
 ### Session#sid
 
   15-byte session-unique identifier.
+
+### Destroying a session
+
+  To destroy a session simply set it to `null`:
+
+```js
+this.session = null;
+```
 
 ## License
 

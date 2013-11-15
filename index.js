@@ -45,14 +45,11 @@ module.exports = function(opts){
 
       yield next;
 
-      // remove session
+      // remove
       if (!this.session) return sess.remove();
 
-      // save new sessions
-      if (!sess._saved && sess.isNew) {
-        debug('auto-saving new session');
-        sess.save();
-      }
+      // save
+      if (sess.changed(json)) sess.save();
     }
   }
 };
@@ -95,6 +92,21 @@ Session.prototype.toJSON = function(){
 };
 
 /**
+ * Check if the session has changed relative to the `prev`
+ * JSON value from the request.
+ *
+ * @param {String} [prev]
+ * @return {Boolean}
+ * @api private
+ */
+
+Session.prototype.changed = function(prev){
+  if (!prev) return true;
+  this._json = JSON.stringify(this);
+  return this._json != prev;
+};
+
+/**
  * Save session changes by
  * performing a Set-Cookie.
  *
@@ -103,11 +115,10 @@ Session.prototype.toJSON = function(){
 
 Session.prototype.save = function(){
   var ctx = this._ctx;
-  var json = JSON.stringify(this);
+  var json = this._json || JSON.stringify(this);
   var opts = ctx.sessionOptions;
   var key = ctx.sessionKey;
 
-  this._saved = true;
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
 };

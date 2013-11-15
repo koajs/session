@@ -32,17 +32,21 @@ module.exports = function(opts){
       if (sess) {
         isNew = false;
         debug('parse %s', sess);
-        this.session = new Session(this, JSON.parse(sess));
+        sess = this.session = new Session(this, JSON.parse(sess));
       } else {
         debug('new session');
-        this.session = new Session(this);
+        sess = this.session = new Session(this);
       }
 
       yield next;
 
-      if (!this.session.saved && isNew) {
+      // clear session
+      if (!this.session) return sess.clear();
+
+      // save new sessions
+      if (!sess._saved && isNew) {
         debug('auto-saving new session');
-        this.session.save();
+        sess.save();
       }
     }
   }
@@ -92,11 +96,27 @@ Session.prototype.toJSON = function(){
 
 Session.prototype.save = function(){
   var ctx = this._ctx;
-  var key = ctx.sessionKey;
-  var opts = ctx.sessionOptions;
   var json = JSON.stringify(this);
+  var opts = ctx.sessionOptions;
+  var key = ctx.sessionKey;
 
-  this.saved = true;
+  this._saved = true;
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
+};
+
+/**
+ * Clear the session.
+ *
+ * @api public
+ */
+
+Session.prototype.clear = function(){
+  var ctx = this._ctx;
+  var opts = ctx.sessionOptions;
+  var key = ctx.sessionKey;
+
+  debug('clear');
+  opts.expires = new Date(0);
+  ctx.cookies.set(key, '', opts);
 };

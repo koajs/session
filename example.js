@@ -7,6 +7,7 @@ app.use(session());
 
 app.use(function(next){
   return function *(){
+    if ('/favicon.ico' == this.path) return;
     var n = this.session.views || 0;
     this.session.views = ++n;
     this.session.save();

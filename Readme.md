@@ -53,6 +53,10 @@ console.log('listening on port 3000');
   To commit changes to a session you must explicitly invoke `this.session.save()`,
   which performs the Set-Cookie.
 
+### Session#clear()
+
+  To clear a session you may invoke `this.session.clear()`, or simply set `this.session` to `null`.
+
 ### Session#sid
 
   15-byte session-unique identifier.

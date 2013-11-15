@@ -3,6 +3,8 @@ var session = require('./');
 var koa = require('koa');
 var app = koa();
 
+app.keys = ['some secret hurr'];
+
 app.use(session());
 
 app.use(function(next){

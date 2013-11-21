@@ -12,11 +12,17 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "koajs/koa"
+    "koa": "koajs/koa",
+    "mocha": "*",
+    "should": "*",
+    "supertest": "*"
   },
   "license": "MIT",
   "dependencies": {
     "debug": "*",
     "uid2": "0.0.3"
+  },
+  "scripts": {
+    "test": "make test"
   }
 }

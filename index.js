@@ -30,22 +30,43 @@ module.exports = function(opts){
   debug('session options %j', opts);
 
   return function *(next){
-    var json = this.cookies.get(key, opts);
+    var sess, json;
+
     this.sessionOptions = opts;
     this.sessionKey = key;
 
-    if (json) {
-      debug('parse %s', json);
-      var sess = this.session = new Session(this, JSON.parse(json));
-    } else {
-      debug('new session');
-      var sess = this.session = new Session(this);
-    }
+    this.__defineGetter__('session', function(){
+      // already retrieved
+      if (sess) return sess;
+      // unset
+      if (false === sess) return null;
+
+      json = this.cookies.get(key, opts);
+
+      if (json) {
+        debug('parse %s', json);
+        sess = new Session(this, JSON.parse(json));
+      } else {
+        debug('new session');
+        sess = new Session(this);
+      }
+
+      return sess;
+    });
+
+    this.__defineSetter__('session', function(val){
+      if (null == val) return sess = false;
+      if ('object' == typeof val) return sess = new Session(this, val);
+      throw new Error('this.session can only be set as null or an object.');
+    });
 
     yield next;
 
+    // not accessed
+    if (undefined === sess) return;
+
     // remove
-    if (!this.session) return sess.remove();
+    if (false === sess) return this.cookies.set(key, '', opts);
 
     // save
     if (sess.changed(json)) sess.save();
@@ -81,7 +102,7 @@ Session.prototype.toJSON = function(){
   var obj = {};
 
   Object.keys(this).forEach(function(key){
-    if ('isNew' == key[0]) return;
+    if ('isNew' == key) return;
     if ('_' == key[0]) return;
     obj[key] = self[key];
   });
@@ -119,20 +140,4 @@ Session.prototype.save = function(){
 
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
-};
-
-/**
- * Remove the session.
- *
- * @api private
- */
-
-Session.prototype.remove = function(){
-  var ctx = this._ctx;
-  var opts = ctx.sessionOptions;
-  var key = ctx.sessionKey;
-
-  debug('remove');
-  opts.expires = new Date(0);
-  ctx.cookies.set(key, '', opts);
 };

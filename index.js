@@ -130,7 +130,6 @@ Session.prototype.changed = function(prev){
 /**
  * Return how many values there are in the session object.
  * Used to see if it's "populated".
- * Aliased as `.populated` because why not.
  *
  * @return {Number}
  * @api public
@@ -138,6 +137,17 @@ Session.prototype.changed = function(prev){
 
 Session.prototype.__defineGetter__('length', function(){
   return Object.keys(this.toJSON()).length;
+});
+
+/**
+ * populated flag, which is just a boolean alias of .length.
+ *
+ * @return {Boolean}
+ * @api public
+ */
+
+Session.prototype.__defineGetter__('populated', function(){
+  return !!this.length;
 });
 
 /**

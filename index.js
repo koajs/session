@@ -4,7 +4,6 @@
  */
 
 var debug = require('debug')('koa-session');
-var uid = require('uid2');
 
 /**
  * Initialize session middleware with `opts`:

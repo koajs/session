@@ -57,32 +57,6 @@ describe('Koa Session', function(){
     })
   })
 
-  describe('this.sessionOptions', function(){
-    it('should be populated', function(done){
-      var app = App();
-      app.use(function *(){
-        this.body = this.sessionOptions;
-      });
-      request(app.listen())
-      .get('/')
-      .expect('Content-Type', /json/)
-      .expect(200, done);
-    })
-  })
-
-  describe('this.sessionKey', function(){
-    it('should be populated', function(done){
-      var app = App();
-      app.use(function *(){
-        this.body = this.sessionKey;
-      });
-      request(app.listen())
-      .get('/')
-      .expect(200)
-      .expect('koa:sess', done);
-    })
-  })
-
   describe('new session', function(){
     describe('when not accessed', function(){
       it('should not Set-Cookie', function(done) {

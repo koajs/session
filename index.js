@@ -32,6 +32,7 @@ module.exports = function(opts){
   return function *(next){
     var sess, json;
 
+    // to pass to Session()
     this.sessionOptions = opts;
     this.sessionKey = key;
 

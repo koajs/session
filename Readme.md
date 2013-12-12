@@ -51,10 +51,6 @@ console.log('listening on port 3000');
 
   Returns __true__ if the session is new.
 
-### Session#sid
-
-  15-byte session-unique identifier.
-
 ### Destroying a session
 
   To destroy a session simply set it to `null`:

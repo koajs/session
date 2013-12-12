@@ -83,11 +83,9 @@ module.exports = function(opts){
  */
 
 function Session(ctx, obj) {
-  obj = obj || {};
   this._ctx = ctx;
-  for (var k in obj) this[k] = obj[k];
-  if (!this.sid) this.isNew = true;
-  if (!this.sid) this.sid = uid(15);
+  if (!obj) this.isNew = true;
+  else for (var k in obj) this[k] = obj[k];
 }
 
 /**

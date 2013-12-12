@@ -12,7 +12,7 @@ describe('Koa Session', function(){
         app.keys = ['a', 'b'];
         app.use(session());
         app.use(function *(){
-          this.body = this.session.sid;
+          this.body = this.session;
         });
 
         request(app.listen())
@@ -26,7 +26,7 @@ describe('Koa Session', function(){
         var app = koa();
         app.use(session());
         app.use(function *(){
-          this.session.sid;
+          this.session;
         });
 
         request(app.listen())
@@ -44,7 +44,7 @@ describe('Koa Session', function(){
           signed: false
         }));
         app.use(function *(){
-          this.body = this.session.sid;
+          this.body = this.session;
         });
 
         request(app.listen())
@@ -115,21 +115,10 @@ describe('Koa Session', function(){
         })
       })
 
-      it('should set .sid', function(done){
-        var app = App();
-        app.use(function *(){
-          this.body = this.session.sid;
-        })
-        request(app.listen())
-        .get('/')
-        .expect('Set-Cookie', /sid/)
-        .expect(200, done)
-      })
-
       it('should not set .isNew', function(done){
         var app = App();
         app.use(function *(){
-          this.body = this.session.sid;
+          this.body = this.session;
         })
         request(app.listen())
         .get('/')
@@ -231,7 +220,6 @@ describe('Koa Session', function(){
         })
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /sid/)
         .expect('Set-Cookie', /hello/)
         .expect(200, done);
       })

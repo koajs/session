@@ -12,6 +12,7 @@ describe('Koa Session', function(){
         app.keys = ['a', 'b'];
         app.use(session());
         app.use(function *(){
+          this.session.message = 'hi';
           this.body = this.session;
         });
 
@@ -26,7 +27,8 @@ describe('Koa Session', function(){
         var app = koa();
         app.use(session());
         app.use(function *(){
-          this.session;
+          this.session.message = 'hi';
+          this.body = this.session;
         });
 
         request(app.listen())
@@ -44,6 +46,7 @@ describe('Koa Session', function(){
           signed: false
         }));
         app.use(function *(){
+          this.session.message = 'hi';
           this.body = this.session;
         });
 
@@ -97,7 +100,24 @@ describe('Koa Session', function(){
       })
     })
 
-    describe('when accessed', function(done){
+    describe('when accessed and not populated', function(done){
+      it('should not Set-Cookie', function(done) {
+        var app = App();
+        app.use(function *(){
+          this.session;
+          this.body = 'greetings';
+        })
+        request(app.listen())
+        .get('/')
+        .expect(200, function(err, res){
+          if (err) return done(err);
+          res.header.should.not.have.property('set-cookie');
+          done();
+        })
+      })
+    })
+
+    describe('when populated', function(done){
       it('should Set-Cookie', function(done){
         var app = App();
         app.use(function *(){
@@ -115,17 +135,16 @@ describe('Koa Session', function(){
         })
       })
 
-      it('should not set .isNew', function(done){
+      it('should not Set-Cookie', function(done){
         var app = App();
         app.use(function *(){
           this.body = this.session;
         })
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
         .expect(200, function(err, res){
           if (err) return done(err);
-          res.header['set-cookie'].should.not.match(/isNew/);
+          res.header.should.not.have.property('set-cookie');
           done();
         })
       })
@@ -212,6 +231,23 @@ describe('Koa Session', function(){
     })
 
     describe('{}', function(){
+      it('should not Set-Cookie', function(done){
+        var app = App();
+        app.use(function *(){
+          this.session = {};
+          this.body = 'asdf';
+        })
+        request(app.listen())
+        .get('/')
+        .expect(200, function(err, res){
+          if (err) return done(err);
+          res.header.should.not.have.property('set-cookie');
+          done();
+        });
+      })
+    })
+
+    describe('{a: b}', function(){
       it('should create a session', function(done){
         var app = App();
         app.use(function *(){

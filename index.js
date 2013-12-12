@@ -69,6 +69,9 @@ module.exports = function(opts){
     // remove
     if (false === sess) return this.cookies.set(key, '', opts);
 
+    // do nothing if new and not populated
+    if (!json && !sess.length) return;
+
     // save
     if (sess.changed(json)) sess.save();
   }
@@ -123,6 +126,19 @@ Session.prototype.changed = function(prev){
   this._json = JSON.stringify(this);
   return this._json != prev;
 };
+
+/**
+ * Return how many values there are in the session object.
+ * Used to see if it's "populated".
+ * Aliased as `.populated` because why not.
+ *
+ * @return {Number}
+ * @api public
+ */
+
+Session.prototype.__defineGetter__('length', function(){
+  return Object.keys(this.toJSON()).length;
+});
 
 /**
  * Save session changes by

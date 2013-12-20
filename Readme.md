@@ -1,4 +1,3 @@
-
 # koa-session
 
  Simple cookie-based session middleware for Koa.
@@ -18,6 +17,7 @@ var session = require('koa-session');
 var koa = require('koa');
 var app = koa();
 
+app.keys = ['some secret hurr'];
 app.use(session());
 
 app.use(function(next){

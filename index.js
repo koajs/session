@@ -38,6 +38,7 @@ module.exports = function(opts){
     this.__defineGetter__('session', function(){
       // already retrieved
       if (sess) return sess;
+
       // unset
       if (false === sess) return null;
 

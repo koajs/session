@@ -29,28 +29,26 @@ module.exports = function(opts){
 
   debug('session options %j', opts);
 
-  return function(next){
-    return function *(){
-      var json = this.cookies.get(key, opts);
-      this.sessionOptions = opts;
-      this.sessionKey = key;
+  return function *(next){
+    var json = this.cookies.get(key, opts);
+    this.sessionOptions = opts;
+    this.sessionKey = key;
 
-      if (json) {
-        debug('parse %s', json);
-        var sess = this.session = new Session(this, JSON.parse(json));
-      } else {
-        debug('new session');
-        var sess = this.session = new Session(this);
-      }
-
-      yield next;
-
-      // remove
-      if (!this.session) return sess.remove();
-
-      // save
-      if (sess.changed(json)) sess.save();
+    if (json) {
+      debug('parse %s', json);
+      var sess = this.session = new Session(this, JSON.parse(json));
+    } else {
+      debug('new session');
+      var sess = this.session = new Session(this);
     }
+
+    yield next;
+
+    // remove
+    if (!this.session) return sess.remove();
+
+    // save
+    if (sess.changed(json)) sess.save();
   }
 };
 

@@ -20,12 +20,10 @@ var app = koa();
 app.keys = ['some secret hurr'];
 app.use(session());
 
-app.use(function(next){
-  return function *(){
-    var n = this.session.views || 0;
-    this.session.views = ++n;
-    this.body = n + ' views';
-  }
+app.use(function *(){
+  var n = this.session.views || 0;
+  this.session.views = ++n;
+  this.body = n + ' views';
 })
 
 app.listen(3000);

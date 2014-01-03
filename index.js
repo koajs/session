@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -61,7 +60,7 @@ module.exports = function(opts){
       throw new Error('this.session can only be set as null or an object.');
     });
 
-    yield next;
+    yield *next;
 
     // not accessed
     if (undefined === sess) return;

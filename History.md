@@ -1,4 +1,9 @@
 
+1.2.1 / 2014-02-04
+==================
+
+ * fix saving sessions when a downstream error is thrown
+
 1.2.0 / 2013-12-21
 ==================
 
@@ -7,7 +12,7 @@
  * change: only save new sessions if populated
  * update to use new middleware signature
 
-1.1.0 / 2013-11-15 
+1.1.0 / 2013-11-15
 ==================
 
  * add change check, removing the need for `.save()`

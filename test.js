@@ -247,6 +247,23 @@ describe('Koa Session', function(){
       })
     })
   })
+
+  describe('when an error is thrown downstream', function(){
+    it('should still save the session', function(done){
+      var app = App();
+      app.use(function *(next){
+        this.session.name = 'funny';
+        yield *next;
+      });
+      app.use(function *(next){
+        this.throw(401);
+      });
+      request(app.listen())
+      .get('/')
+      .expect('Set-Cookie', /"name":"funny"/)
+      .expect(401, done);
+    })
+  })
 })
 
 function App(options) {

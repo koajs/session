@@ -12,7 +12,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "koajs/koa",
+    "koa": "*",
     "mocha": "*",
     "should": "*",
     "supertest": "*"

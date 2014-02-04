@@ -60,19 +60,27 @@ module.exports = function(opts){
       throw new Error('this.session can only be set as null or an object.');
     });
 
-    yield *next;
+    var err;
+    try {
+      yield *next;
+    } catch (_err) {
+      err = _err;
+    }
 
-    // not accessed
-    if (undefined === sess) return;
+    if (undefined === sess) {
+      // not accessed
+    } else if (false === sess) {
+      // remove
+      this.cookies.set(key, '', opts);
+    } else if (!json && !sess.length) {
+      // do nothing if new and not populated
+    } else if (sess.changed(json)) {
+      // save
+      sess.save();
+    }
 
-    // remove
-    if (false === sess) return this.cookies.set(key, '', opts);
-
-    // do nothing if new and not populated
-    if (!json && !sess.length) return;
-
-    // save
-    if (sess.changed(json)) sess.save();
+    // rethrow any downstream errors
+    if (err) throw err;
   }
 };
 

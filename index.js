@@ -45,7 +45,17 @@ module.exports = function(opts){
 
       if (json) {
         debug('parse %s', json);
-        sess = new Session(this, JSON.parse(json));
+        try {
+          sess = new Session(this, decode(json));
+        } catch (err) {
+          // backwards compatibility:
+          // create a new session if parsing fails.
+          // new Buffer(string, 'base64') does not seem to crash
+          // when `string` is not base64-encoded.
+          // but `JSON.parse(string)` will crash.
+          if (!(err instanceof SyntaxError)) throw err;
+          sess = new Session(this);
+        }
       } else {
         debug('new session');
         sess = new Session(this);
@@ -130,7 +140,7 @@ Session.prototype.toJSON = function(){
 
 Session.prototype.changed = function(prev){
   if (!prev) return true;
-  this._json = JSON.stringify(this);
+  this._json = encode(this);
   return this._json != prev;
 };
 
@@ -166,10 +176,36 @@ Session.prototype.__defineGetter__('populated', function(){
 
 Session.prototype.save = function(){
   var ctx = this._ctx;
-  var json = this._json || JSON.stringify(this);
+  var json = this._json || encode(this);
   var opts = ctx.sessionOptions;
   var key = ctx.sessionKey;
 
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
 };
+
+/**
+ * Decode the base64 cookie value to an object.
+ *
+ * @param {String} string
+ * @return {Object}
+ * @api private
+ */
+
+function decode(string) {
+  var body = new Buffer(string, 'base64').toString('utf8');
+  return JSON.parse(body);
+}
+
+/**
+ * Encode an object into a base64-encoded JSON string.
+ *
+ * @param {Object} body
+ * @return {String}
+ * @api private
+ */
+
+function encode(body) {
+  body = JSON.stringify(body);
+  return new Buffer(body).toString('base64');
+}

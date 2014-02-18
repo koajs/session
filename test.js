@@ -57,6 +57,31 @@ describe('Koa Session', function(){
     })
   })
 
+  describe('when the session contains a ;', function(){
+    it('should still work', function(done){
+      var app = App();
+      app.use(function *(){
+        if (this.method === 'POST') {
+          this.session.string = ';';
+          this.status = 204;
+        } else {
+          this.body = this.session.string;
+        }
+      });
+      var server = app.listen();
+      request(server)
+      .post('/')
+      .expect(204, function(err, res){
+        if (err) return done(err);
+        var cookie = res.headers['set-cookie'];
+        request(server)
+        .get('/')
+        .set('Cookie', cookie.join(';'))
+        .expect(';', done);
+      })
+    })
+  })
+
   describe('new session', function(){
     describe('when not accessed', function(){
       it('should not Set-Cookie', function(done) {
@@ -101,7 +126,6 @@ describe('Koa Session', function(){
         request(app.listen())
         .get('/')
         .expect('Set-Cookie', /koa:sess/)
-        .expect('Set-Cookie', /hello/)
         .expect(200, function(err, res){
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
@@ -183,7 +207,7 @@ describe('Koa Session', function(){
         request(app.listen())
         .get('/')
         .set('Cookie', cookie)
-        .expect('Set-Cookie', /money/)
+        .expect('Set-Cookie', /koa:sess/)
         .expect(200, done);
       })
     })
@@ -199,7 +223,7 @@ describe('Koa Session', function(){
         })
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /expire/)
+        .expect('Set-Cookie', /koa:sess/)
         .expect(200, done);
       })
     })
@@ -230,7 +254,7 @@ describe('Koa Session', function(){
         })
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /hello/)
+        .expect('Set-Cookie', /koa:sess/)
         .expect(200, done);
       })
     })
@@ -248,9 +272,19 @@ describe('Koa Session', function(){
     })
   })
 
-  describe('when an error is thrown downstream', function(){
+  describe('when an error is thrown downstream and caught upstream', function(){
     it('should still save the session', function(done){
-      var app = App();
+      var app = koa();
+      app.keys = ['a', 'b'];
+      app.use(function *(next){
+        try {
+          yield *next;
+        } catch (err) {
+          this.status = err.status;
+          this.body = err.message;
+        }
+      });
+      app.use(session());
       app.use(function *(next){
         this.session.name = 'funny';
         yield *next;
@@ -260,7 +294,7 @@ describe('Koa Session', function(){
       });
       request(app.listen())
       .get('/')
-      .expect('Set-Cookie', /"name":"funny"/)
+      .expect('Set-Cookie', /koa:sess/)
       .expect(401, done);
     })
   })

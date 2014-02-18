@@ -1,4 +1,9 @@
 
+2.0.0 / 2014-02-17
+==================
+
+ * changed cookies to be base64-encoded (somewhat breaks backwards compatibility)
+
 1.2.1 / 2014-02-04
 ==================
 

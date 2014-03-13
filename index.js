@@ -18,7 +18,7 @@ module.exports = function(opts){
   opts = opts || {};
 
   // key
-  var key = opts.key || 'koa:sess';
+  opts.key = opts.key || 'koa:sess';
 
   // defaults
   if (null == opts.overwrite) opts.overwrite = true;
@@ -32,7 +32,7 @@ module.exports = function(opts){
 
     // to pass to Session()
     this.sessionOptions = opts;
-    this.sessionKey = key;
+    this.sessionKey = opts.key;
 
     this.__defineGetter__('session', function(){
       // already retrieved
@@ -41,7 +41,7 @@ module.exports = function(opts){
       // unset
       if (false === sess) return null;
 
-      json = this.cookies.get(key, opts);
+      json = this.cookies.get(opts.key, opts);
 
       if (json) {
         debug('parse %s', json);
@@ -75,20 +75,37 @@ module.exports = function(opts){
     } catch (err) {
       throw err;
     } finally {
-      if (undefined === sess) {
-        // not accessed
-      } else if (false === sess) {
-        // remove
-        this.cookies.set(key, '', opts);
-      } else if (!json && !sess.length) {
-        // do nothing if new and not populated
-      } else if (sess.changed(json)) {
-        // save
-        sess.save();
-      }
+      commit(this, json, sess, opts);
     }
   }
 };
+
+/**
+ * Commit the session changes or removal.
+ *
+ * @param {Context} ctx
+ * @param {String} json
+ * @param {Object} sess
+ * @param {Object} opts
+ * @api private
+ */
+
+function commit(ctx, json, sess, opts) {
+  // not accessed
+  if (undefined === sess) return;
+
+  // removed
+  if (false === sess) {
+    ctx.cookies.set(opts.key, '', opts);
+    return;
+  }
+
+  // do nothing if new and not populated
+  if (!json && !sess.length) return;
+
+  // save
+  if (sess.changed(json)) sess.save();
+}
 
 /**
  * Session model.

@@ -253,7 +253,7 @@ describe('Koa Session', function(){
       })
     })
 
-    describe('{}', function(){
+    describe('an empty object', function(){
       it('should not Set-Cookie', function(done){
         var app = App();
 
@@ -272,7 +272,7 @@ describe('Koa Session', function(){
       })
     })
 
-    describe('{a: b}', function(){
+    describe('an object', function(){
       it('should create a session', function(done){
         var app = App();
 

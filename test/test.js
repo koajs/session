@@ -1,6 +1,6 @@
 var koa = require('koa');
 var request = require('supertest');
-var session = require('./');
+var session = require('..');
 
 describe('Koa Session', function(){
   var cookie;

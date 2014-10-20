@@ -21,7 +21,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "*"
+    "debug": "*",
+    "deep-equal": "~0.2.1"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha --harmony-generators --require should --reporter spec",

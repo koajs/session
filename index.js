@@ -3,6 +3,7 @@
  */
 
 var debug = require('debug')('koa-session');
+var deepEqual = require('deep-equal');
 
 /**
  * Initialize session middleware with `opts`:
@@ -51,12 +52,14 @@ module.exports = function(opts, app){
     // unset
     if (false === sess) return null;
 
-    var json = this._sessjson = this.cookies.get(opts.key, opts);
+    var json = this.cookies.get(opts.key, opts);
 
     if (json) {
       debug('parse %s', json);
       try {
         sess = new Session(this, decode(json));
+        // make prev a different object from sess
+        json = decode(json);
       } catch (err) {
         // backwards compatibility:
         // create a new session if parsing fails.
@@ -65,6 +68,7 @@ module.exports = function(opts, app){
         // but `JSON.parse(string)` will crash.
         if (!(err instanceof SyntaxError)) throw err;
         sess = new Session(this);
+        json = null;
       }
     } else {
       debug('new session');
@@ -72,6 +76,7 @@ module.exports = function(opts, app){
     }
 
     this._sess = sess;
+    this._sessjson = json;
     return sess;
   });
 
@@ -165,8 +170,7 @@ Session.prototype.toJSON = function(){
 
 Session.prototype.changed = function(prev){
   if (!prev) return true;
-  this._json = encode(this);
-  return this._json != prev;
+  return !deepEqual(prev, this.toJSON());
 };
 
 /**
@@ -201,10 +205,15 @@ Session.prototype.__defineGetter__('populated', function(){
 
 Session.prototype.save = function(){
   var ctx = this._ctx;
-  var json = this._json || encode(this);
+  var json = this.toJSON();
   var opts = ctx.sessionOptions;
   var key = ctx.sessionKey;
 
+  // set expire into cookie value
+  var maxAge = opts.maxAge || opts.maxage || 24 * 60 * 60 * 1000; // default 1d
+  json._expire = maxAge + Date.now();
+
+  json = encode(json);
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
 };
@@ -219,7 +228,13 @@ Session.prototype.save = function(){
 
 function decode(string) {
   var body = new Buffer(string, 'base64').toString('utf8');
-  return JSON.parse(body);
+  var json = JSON.parse(body);
+
+  // check if the cookie is expired
+  if (!json._expire) return null;
+  if (json._expire < Date.now()) return null;
+  delete json._expire;
+  return json;
 }
 
 /**

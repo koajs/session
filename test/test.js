@@ -411,6 +411,37 @@ describe('Koa Session', function(){
       })
     })
   })
+
+  describe('ctx.session.maxAge', function (){
+    it('should return opt.maxAge', function(done){
+      var app = App({maxAge: 100});
+
+      app.use(function *(){
+        this.body = this.session.maxAge;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('100', done);
+    })
+  })
+
+  describe('ctx.session.maxAge=', function () {
+    it('should set sessionOptions.maxAge', function(done){
+      var app = App();
+
+      app.use(function* (){
+        this.session.foo = 'bar';
+        this.session.maxAge = 100;
+        this.body = this.session.foo;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('Set-Cookie', /expires=/)
+      .expect(200, done);
+    })
+  })
 })
 
 function App(options) {

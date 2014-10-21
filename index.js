@@ -5,6 +5,8 @@
 var debug = require('debug')('koa-session');
 var deepEqual = require('deep-equal');
 
+var ONE_DAY = 24 * 60 * 60 * 1000;
+
 /**
  * Initialize session middleware with `opts`:
  *
@@ -29,6 +31,9 @@ module.exports = function(opts, app){
   // key
   opts.key = opts.key || 'koa:sess';
 
+  // back-compat maxage
+  if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
+
   // defaults
   if (null == opts.overwrite) opts.overwrite = true;
   if (null == opts.httpOnly) opts.httpOnly = true;
@@ -41,7 +46,6 @@ module.exports = function(opts, app){
   }
 
   // to pass to Session()
-  app.context.sessionOptions = opts;
   app.context.sessionKey = opts.key;
 
   app.context.__defineGetter__('session', function(){
@@ -87,6 +91,11 @@ module.exports = function(opts, app){
   });
 
   return function* (next){
+    // make sessionOptions independent in each request
+    this.sessionOptions = {};
+    for (var key in opts) {
+      this.sessionOptions[key] = opts[key];
+    }
     try {
       yield *next;
     } catch (err) {
@@ -197,6 +206,28 @@ Session.prototype.__defineGetter__('populated', function(){
 });
 
 /**
+ * get session maxAge
+ *
+ * @return {Number}
+ * @api public
+ */
+
+Session.prototype.__defineGetter__('maxAge', function(){
+  return this._ctx.sessionOptions.maxAge;
+});
+
+/**
+ * set session maxAge
+ *
+ * @param {Number}
+ * @api public
+ */
+
+Session.prototype.__defineSetter__('maxAge', function(val){
+  this._ctx.sessionOptions.maxAge = val;
+});
+
+/**
  * Save session changes by
  * performing a Set-Cookie.
  *
@@ -210,7 +241,7 @@ Session.prototype.save = function(){
   var key = ctx.sessionKey;
 
   // set expire into cookie value
-  var maxAge = opts.maxAge || opts.maxage || 24 * 60 * 60 * 1000; // default 1d
+  var maxAge = opts.maxAge || ONE_DAY;
   json._expire = maxAge + Date.now();
 
   json = encode(json);

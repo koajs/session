@@ -11,10 +11,18 @@ var debug = require('debug')('koa-session');
  * - all other options are passed as cookie options
  *
  * @param {Object} [opts]
+ * @param {Application} app, koa application instance
  * @api public
  */
 
-module.exports = function(opts){
+module.exports = function(opts, app){
+  // session(app[, opts])
+  if (opts && typeof opts.use === 'function') {
+    var tmp = app;
+    app = opts;
+    opts = tmp;
+  }
+
   opts = opts || {};
 
   // key
@@ -27,55 +35,59 @@ module.exports = function(opts){
 
   debug('session options %j', opts);
 
-  return function *(next){
-    var sess, json;
+  if (!app || typeof app.use !== 'function') {
+    throw new TypeError('app instance required: `session(opts, app)`');
+  }
 
-    // to pass to Session()
-    this.sessionOptions = opts;
-    this.sessionKey = opts.key;
+  // to pass to Session()
+  app.context.sessionOptions = opts;
+  app.context.sessionKey = opts.key;
 
-    this.__defineGetter__('session', function(){
-      // already retrieved
-      if (sess) return sess;
+  app.context.__defineGetter__('session', function(){
+    var sess = this._sess;
+    // already retrieved
+    if (sess) return sess;
 
-      // unset
-      if (false === sess) return null;
+    // unset
+    if (false === sess) return null;
 
-      json = this.cookies.get(opts.key, opts);
+    var json = this._sessjson = this.cookies.get(opts.key, opts);
 
-      if (json) {
-        debug('parse %s', json);
-        try {
-          sess = new Session(this, decode(json));
-        } catch (err) {
-          // backwards compatibility:
-          // create a new session if parsing fails.
-          // new Buffer(string, 'base64') does not seem to crash
-          // when `string` is not base64-encoded.
-          // but `JSON.parse(string)` will crash.
-          if (!(err instanceof SyntaxError)) throw err;
-          sess = new Session(this);
-        }
-      } else {
-        debug('new session');
+    if (json) {
+      debug('parse %s', json);
+      try {
+        sess = new Session(this, decode(json));
+      } catch (err) {
+        // backwards compatibility:
+        // create a new session if parsing fails.
+        // new Buffer(string, 'base64') does not seem to crash
+        // when `string` is not base64-encoded.
+        // but `JSON.parse(string)` will crash.
+        if (!(err instanceof SyntaxError)) throw err;
         sess = new Session(this);
       }
+    } else {
+      debug('new session');
+      sess = new Session(this);
+    }
 
-      return sess;
-    });
+    this._sess = sess;
+    return sess;
+  });
 
-    this.__defineSetter__('session', function(val){
-      if (null == val) return sess = false;
-      if ('object' == typeof val) return sess = new Session(this, val);
-      throw new Error('this.session can only be set as null or an object.');
-    });
+  app.context.__defineSetter__('session', function(val){
+    if (null == val) return this._sess = false;
+    if ('object' == typeof val) return this._sess = new Session(this, val);
+    throw new Error('this.session can only be set as null or an object.');
+  });
 
+  return function* (next){
     try {
       yield *next;
     } catch (err) {
       throw err;
     } finally {
-      commit(this, json, sess, opts);
+      commit(this, this._sessjson, this._sess, opts);
     }
   }
 };

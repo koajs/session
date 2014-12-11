@@ -5,7 +5,7 @@ var app = koa();
 
 app.keys = ['some secret hurr'];
 
-app.use(session());
+app.use(session(app));
 
 app.use(function* (next){
   if ('/favicon.ico' == this.path) return;

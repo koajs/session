@@ -1,4 +1,11 @@
 
+3.0.0 / 2014-12-11
+==================
+
+  * improve performance by reduce hiddin class on every request
+  * refactor with commit() helper
+  * refactor error handling with finally statement
+
 2.0.0 / 2014-02-17
 ==================
 

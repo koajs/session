@@ -11,7 +11,7 @@ describe('Koa Session', function(){
         var app = koa();
 
         app.keys = ['a', 'b'];
-        app.use(session());
+        app.use(session({}, app));
 
         app.use(function *(){
           this.session.message = 'hi';
@@ -28,7 +28,7 @@ describe('Koa Session', function(){
       it('should throw', function(done){
         var app = koa();
 
-        app.use(session());
+        app.use(session(app));
 
         app.use(function *(){
           this.session.message = 'hi';
@@ -40,6 +40,15 @@ describe('Koa Session', function(){
         .expect(500, done);
       })
     })
+
+    describe('when app not set', function(){
+      it('should throw', function(){
+        var app = koa();
+        (function(){
+          app.use(session());
+        }).should.throw('app instance required: `session(opts, app)`');
+      })
+    })
   })
 
   describe('when options.signed = false', function(){
@@ -47,7 +56,7 @@ describe('Koa Session', function(){
       it('should work', function(done){
         var app = koa();
 
-        app.use(session({ signed: false }));
+        app.use(session({ signed: false }, app));
 
         app.use(function *(){
           this.session.message = 'hi';
@@ -318,7 +327,7 @@ describe('Koa Session', function(){
         }
       });
 
-      app.use(session());
+      app.use(session(app));
 
       app.use(function *(next){
         this.session.name = 'funny';
@@ -340,6 +349,9 @@ describe('Koa Session', function(){
 function App(options) {
   var app = koa();
   app.keys = ['a', 'b'];
-  app.use(session(options));
+  app.use(session(options, app));
+  // app.on('error', function (err) {
+  //   console.log(err.stack);
+  // });
   return app;
 }

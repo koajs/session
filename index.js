@@ -3,6 +3,9 @@
  */
 
 var debug = require('debug')('koa-session');
+var deepEqual = require('deep-equal');
+
+var ONE_DAY = 24 * 60 * 60 * 1000;
 
 /**
  * Initialize session middleware with `opts`:
@@ -28,6 +31,9 @@ module.exports = function(opts, app){
   // key
   opts.key = opts.key || 'koa:sess';
 
+  // back-compat maxage
+  if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
+
   // defaults
   if (null == opts.overwrite) opts.overwrite = true;
   if (null == opts.httpOnly) opts.httpOnly = true;
@@ -40,7 +46,6 @@ module.exports = function(opts, app){
   }
 
   // to pass to Session()
-  app.context.sessionOptions = opts;
   app.context.sessionKey = opts.key;
 
   app.context.__defineGetter__('session', function(){
@@ -51,12 +56,14 @@ module.exports = function(opts, app){
     // unset
     if (false === sess) return null;
 
-    var json = this._sessjson = this.cookies.get(opts.key, opts);
+    var json = this.cookies.get(opts.key, opts);
 
     if (json) {
       debug('parse %s', json);
       try {
         sess = new Session(this, decode(json));
+        // make prev a different object from sess
+        json = decode(json);
       } catch (err) {
         // backwards compatibility:
         // create a new session if parsing fails.
@@ -65,6 +72,7 @@ module.exports = function(opts, app){
         // but `JSON.parse(string)` will crash.
         if (!(err instanceof SyntaxError)) throw err;
         sess = new Session(this);
+        json = null;
       }
     } else {
       debug('new session');
@@ -72,6 +80,7 @@ module.exports = function(opts, app){
     }
 
     this._sess = sess;
+    this._prevjson = json;
     return sess;
   });
 
@@ -82,12 +91,17 @@ module.exports = function(opts, app){
   });
 
   return function* (next){
+    // make sessionOptions independent in each request
+    this.sessionOptions = {};
+    for (var key in opts) {
+      this.sessionOptions[key] = opts[key];
+    }
     try {
       yield *next;
     } catch (err) {
       throw err;
     } finally {
-      commit(this, this._sessjson, this._sess, opts);
+      commit(this, this._prevjson, this._sess, opts);
     }
   }
 };
@@ -96,13 +110,13 @@ module.exports = function(opts, app){
  * Commit the session changes or removal.
  *
  * @param {Context} ctx
- * @param {String} json
+ * @param {Object} prevjson
  * @param {Object} sess
  * @param {Object} opts
  * @api private
  */
 
-function commit(ctx, json, sess, opts) {
+function commit(ctx, prevjson, sess, opts) {
   // not accessed
   if (undefined === sess) return;
 
@@ -113,10 +127,10 @@ function commit(ctx, json, sess, opts) {
   }
 
   // do nothing if new and not populated
-  if (!json && !sess.length) return;
+  if (!prevjson && !sess.length) return;
 
   // save
-  if (sess.changed(json)) sess.save();
+  if (sess.changed(prevjson)) sess.save();
 }
 
 /**
@@ -129,8 +143,16 @@ function commit(ctx, json, sess, opts) {
 
 function Session(ctx, obj) {
   this._ctx = ctx;
-  if (!obj) this.isNew = true;
-  else for (var k in obj) this[k] = obj[k];
+  if (!obj) {
+    this.isNew = true;
+  }
+  else {
+    for (var k in obj) {
+      // change session options
+      if ('_maxAge' == k) this._ctx.sessionOptions.maxAge = obj._maxAge;
+      else this[k] = obj[k];
+    }
+  }
 }
 
 /**
@@ -158,15 +180,16 @@ Session.prototype.toJSON = function(){
  * Check if the session has changed relative to the `prev`
  * JSON value from the request.
  *
- * @param {String} [prev]
+ * @param {Object} [prev]
  * @return {Boolean}
  * @api private
  */
 
 Session.prototype.changed = function(prev){
   if (!prev) return true;
-  this._json = encode(this);
-  return this._json != prev;
+  delete prev._expire;
+  delete prev._maxAge;
+  return !deepEqual(prev, this.toJSON());
 };
 
 /**
@@ -193,6 +216,28 @@ Session.prototype.__defineGetter__('populated', function(){
 });
 
 /**
+ * get session maxAge
+ *
+ * @return {Number}
+ * @api public
+ */
+
+Session.prototype.__defineGetter__('maxAge', function(){
+  return this._ctx.sessionOptions.maxAge;
+});
+
+/**
+ * set session maxAge
+ *
+ * @param {Number}
+ * @api public
+ */
+
+Session.prototype.__defineSetter__('maxAge', function(val){
+  this._ctx.sessionOptions.maxAge = val;
+});
+
+/**
  * Save session changes by
  * performing a Set-Cookie.
  *
@@ -201,10 +246,16 @@ Session.prototype.__defineGetter__('populated', function(){
 
 Session.prototype.save = function(){
   var ctx = this._ctx;
-  var json = this._json || encode(this);
+  var json = this.toJSON();
   var opts = ctx.sessionOptions;
   var key = ctx.sessionKey;
 
+  // set expire into cookie value
+  var maxAge = opts.maxAge || ONE_DAY;
+  json._expire = maxAge + Date.now();
+  json._maxAge = maxAge;
+
+  json = encode(json);
   debug('save %s', json);
   ctx.cookies.set(key, json, opts);
 };
@@ -219,7 +270,12 @@ Session.prototype.save = function(){
 
 function decode(string) {
   var body = new Buffer(string, 'base64').toString('utf8');
-  return JSON.parse(body);
+  var json = JSON.parse(body);
+
+  // check if the cookie is expired
+  if (!json._expire) return null;
+  if (json._expire < Date.now()) return null;
+  return json;
 }
 
 /**

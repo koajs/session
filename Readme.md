@@ -49,6 +49,14 @@ console.log('listening on port 3000');
 
   Returns __true__ if the session is new.
 
+### Session#maxAge
+
+  Get cookie's maxAge.
+
+### Session#maxAge=
+
+  Set cookie's maxAge.
+
 ### Destroying a session
 
   To destroy a session simply set it to `null`:

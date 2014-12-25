@@ -344,14 +344,109 @@ describe('Koa Session', function(){
       .expect(401, done);
     })
   })
+
+  describe('when maxAge present', function () {
+    describe('and not expire', function () {
+      it('should not expire the session', function (done) {
+        var app = App({ maxAge: 100 });
+
+        app.use(function* () {
+          if (this.method === 'POST') {
+            this.session.message = 'hi';
+            this.body = 200;
+            return;
+          }
+
+          this.body = this.session.message;
+        });
+
+        var server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .end(function (err, res) {
+          if (err) return done(err);
+          var cookie = res.headers['set-cookie'].join(';');
+
+          request(server)
+          .get('/')
+          .set('cookie', cookie)
+          .expect('hi', done);
+        })
+      })
+    })
+
+
+    describe('and expired', function () {
+      it('should expire the sess', function (done) {
+        var app = App({ maxAge: 100 });
+
+        app.use(function* () {
+          if (this.method === 'POST') {
+            this.session.message = 'hi';
+            this.status = 200;
+            return;
+          }
+
+          this.body = this.session.message || '';
+        });
+
+        var server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .end(function (err, res) {
+          if (err) return done(err);
+          var cookie = res.headers['set-cookie'].join(';');
+
+          setTimeout(function () {
+          request(server)
+          .get('/')
+          .set('cookie', cookie)
+          .expect('', done);
+          }, 200);
+        })
+      })
+    })
+  })
+
+  describe('ctx.session.maxAge', function (){
+    it('should return opt.maxAge', function(done){
+      var app = App({maxAge: 100});
+
+      app.use(function *(){
+        this.body = this.session.maxAge;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('100', done);
+    })
+  })
+
+  describe('ctx.session.maxAge=', function () {
+    it('should set sessionOptions.maxAge', function(done){
+      var app = App();
+
+      app.use(function* (){
+        this.session.foo = 'bar';
+        this.session.maxAge = 100;
+        this.body = this.session.foo;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('Set-Cookie', /expires=/)
+      .expect(200, done);
+    })
+  })
 })
 
 function App(options) {
   var app = koa();
   app.keys = ['a', 'b'];
   app.use(session(options, app));
-  // app.on('error', function (err) {
-  //   console.log(err.stack);
-  // });
   return app;
 }

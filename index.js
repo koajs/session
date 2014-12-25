@@ -80,7 +80,7 @@ module.exports = function(opts, app){
     }
 
     this._sess = sess;
-    this._sessjson = json;
+    this._prevjson = json;
     return sess;
   });
 
@@ -101,7 +101,7 @@ module.exports = function(opts, app){
     } catch (err) {
       throw err;
     } finally {
-      commit(this, this._sessjson, this._sess, opts);
+      commit(this, this._prevjson, this._sess, opts);
     }
   }
 };
@@ -110,13 +110,13 @@ module.exports = function(opts, app){
  * Commit the session changes or removal.
  *
  * @param {Context} ctx
- * @param {String} json
+ * @param {Object} prevjson
  * @param {Object} sess
  * @param {Object} opts
  * @api private
  */
 
-function commit(ctx, json, sess, opts) {
+function commit(ctx, prevjson, sess, opts) {
   // not accessed
   if (undefined === sess) return;
 
@@ -127,10 +127,10 @@ function commit(ctx, json, sess, opts) {
   }
 
   // do nothing if new and not populated
-  if (!json && !sess.length) return;
+  if (!prevjson && !sess.length) return;
 
   // save
-  if (sess.changed(json)) sess.save();
+  if (sess.changed(prevjson)) sess.save();
 }
 
 /**
@@ -180,7 +180,7 @@ Session.prototype.toJSON = function(){
  * Check if the session has changed relative to the `prev`
  * JSON value from the request.
  *
- * @param {String} [prev]
+ * @param {Object} [prev]
  * @return {Boolean}
  * @api private
  */

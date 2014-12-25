@@ -448,8 +448,5 @@ function App(options) {
   var app = koa();
   app.keys = ['a', 'b'];
   app.use(session(options, app));
-  // app.on('error', function (err) {
-  //   console.log(err.stack);
-  // });
   return app;
 }

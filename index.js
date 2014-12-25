@@ -143,8 +143,16 @@ function commit(ctx, json, sess, opts) {
 
 function Session(ctx, obj) {
   this._ctx = ctx;
-  if (!obj) this.isNew = true;
-  else for (var k in obj) this[k] = obj[k];
+  if (!obj) {
+    this.isNew = true;
+  }
+  else {
+    for (var k in obj) {
+      // change session options
+      if ('_maxAge' == k) this._ctx.sessionOptions.maxAge = obj._maxAge;
+      else this[k] = obj[k];
+    }
+  }
 }
 
 /**
@@ -179,6 +187,8 @@ Session.prototype.toJSON = function(){
 
 Session.prototype.changed = function(prev){
   if (!prev) return true;
+  delete prev._expire;
+  delete prev._maxAge;
   return !deepEqual(prev, this.toJSON());
 };
 
@@ -243,6 +253,7 @@ Session.prototype.save = function(){
   // set expire into cookie value
   var maxAge = opts.maxAge || ONE_DAY;
   json._expire = maxAge + Date.now();
+  json._maxAge = maxAge;
 
   json = encode(json);
   debug('save %s', json);
@@ -264,7 +275,6 @@ function decode(string) {
   // check if the cookie is expired
   if (!json._expire) return null;
   if (json._expire < Date.now()) return null;
-  delete json._expire;
   return json;
 }
 

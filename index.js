@@ -61,6 +61,8 @@ module.exports = function(opts, app){
     if (json) {
       debug('parse %s', json);
       try {
+        // make sure sessionOptions exists
+        initSessionOptions(this, opts);
         sess = new Session(this, decode(json));
         // make prev a different object from sess
         json = decode(json);
@@ -92,19 +94,26 @@ module.exports = function(opts, app){
 
   return function* (next){
     // make sessionOptions independent in each request
-    this.sessionOptions = {};
-    for (var key in opts) {
-      this.sessionOptions[key] = opts[key];
-    }
+    initSessionOptions(this, opts);
     try {
-      yield *next;
+      yield* next;
     } catch (err) {
       throw err;
     } finally {
       commit(this, this._prevjson, this._sess, opts);
     }
-  }
+  };
 };
+
+function initSessionOptions(ctx, opts) {
+  if (ctx.sessionOptions) {
+    return;
+  }
+  ctx.sessionOptions = {};
+  for (var key in opts) {
+    ctx.sessionOptions[key] = opts[key];
+  }
+}
 
 /**
  * Commit the session changes or removal.

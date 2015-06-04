@@ -1,4 +1,10 @@
 
+3.1.1 / 2015-06-04
+==================
+
+  * deps: upgrade deep-equal to 1.0.0
+  * fix: allow get session property before enter session middleware
+
 3.1.0 / 2014-12-25
 ==================
 

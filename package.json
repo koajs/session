@@ -15,18 +15,18 @@
   "devDependencies": {
     "istanbul-harmony": "0",
     "koa": "0",
-    "mocha": "1",
-    "should": "3",
-    "supertest": "0"
+    "mocha": "2",
+    "should": "6",
+    "supertest": "1"
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "*",
-    "deep-equal": "~0.2.1"
+    "debug": "~2.2.0",
+    "deep-equal": "~1.0.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony-generators --require should --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony-generators ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node --harmony-generators ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",
+    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
+    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
   }
 }

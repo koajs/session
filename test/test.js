@@ -1,5 +1,6 @@
 var koa = require('koa');
 var request = require('supertest');
+var should = require('should');
 var session = require('..');
 
 describe('Koa Session', function(){
@@ -440,6 +441,35 @@ describe('Koa Session', function(){
       .get('/')
       .expect('Set-Cookie', /expires=/)
       .expect(200, done);
+    })
+  })
+
+  describe('when get session before enter session middleware', function(){
+    it('should work', function(done){
+      var app = koa();
+
+      app.keys = ['a', 'b'];
+      app.use(function* (next) {
+        this.session.foo = 'hi';
+        yield next;
+      });
+      app.use(session({}, app));
+      app.use(function* (){
+        this.body = this.session;
+      });
+
+      request(app.callback())
+      .get('/')
+      .expect(200, function (err, res) {
+        should.not.exist(err);
+        var cookies = res.headers['set-cookie'].join(';');
+        cookies.should.containEql('koa:sess=');
+
+        request(app.callback())
+        .get('/')
+        .set('Cookie', cookies)
+        .expect(200, done);
+      });
     })
   })
 })

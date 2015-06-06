@@ -472,6 +472,61 @@ describe('Koa Session', function(){
       });
     })
   })
+
+  describe('when valid and beforeSave set', function(){
+    it('should ignore session when uid changed', function(done){
+      var app = koa();
+
+      app.keys = ['a', 'b'];
+      app.use(session({
+        valid: function (ctx, sess) {
+          return ctx.cookies.get('uid') === sess.uid;
+        },
+        beforeSave: function (ctx, sess) {
+          sess.uid = ctx.cookies.get('uid');
+        }
+      }, app));
+      app.use(function* () {
+        if (!this.session.foo) {
+          this.session.foo = Date.now() + '|uid:' + this.cookies.get('uid');
+        }
+
+        this.body = {
+          foo: this.session.foo,
+          uid: this.cookies.get('uid'),
+        };
+      });
+
+      request(app.callback())
+      .get('/')
+      .set('Cookie', 'uid=123')
+      .expect(200, function (err, res) {
+        should.not.exist(err);
+        var data = res.body;
+        var cookies = res.headers['set-cookie'].join(';');
+        cookies.should.containEql('koa:sess=');
+
+        request(app.callback())
+        .get('/')
+        .set('Cookie', cookies + ';uid=123')
+        .expect(200)
+        .expect(data, function (err) {
+          should.not.exist(err);
+
+          // should ignore uid:123 session and create a new session for uid:456
+          request(app.callback())
+          .get('/')
+          .set('Cookie', cookies + ';uid=456')
+          .expect(200, function (err, res) {
+            should.not.exist(err);
+            res.body.uid.should.equal('456');
+            res.body.foo.should.not.equal(data.foo);
+            done();
+          });
+        });
+      });
+    })
+  })
 })
 
 function App(options) {

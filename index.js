@@ -63,15 +63,24 @@ module.exports = function(opts, app){
       try {
         // make sure sessionOptions exists
         initSessionOptions(this, opts);
-        sess = new Session(this, decode(json));
-        // make prev a different object from sess
-        json = decode(json);
+        var obj = decode(json);
+        if (typeof opts.valid === 'function' && !opts.valid(this, obj)) {
+          // valid session value fail, ignore this session
+          sess = new Session(this);
+          json = obj;
+          debug('invalid %j', obj);
+        } else {
+          sess = new Session(this, obj);
+          // make prev a different object from sess
+          json = decode(json);
+        }
       } catch (err) {
         // backwards compatibility:
         // create a new session if parsing fails.
         // new Buffer(string, 'base64') does not seem to crash
         // when `string` is not base64-encoded.
         // but `JSON.parse(string)` will crash.
+        debug('decode %j error: %s', json, err);
         if (!(err instanceof SyntaxError)) throw err;
         sess = new Session(this);
         json = null;
@@ -139,7 +148,12 @@ function commit(ctx, prevjson, sess, opts) {
   if (!prevjson && !sess.length) return;
 
   // save
-  if (sess.changed(prevjson)) sess.save();
+  if (sess.changed(prevjson)) {
+    if (typeof opts.beforeSave === 'function') {
+      opts.beforeSave(ctx, sess);
+    }
+    sess.save();
+  }
 }
 
 /**

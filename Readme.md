@@ -71,6 +71,11 @@ console.log('listening on port 3000');
   `ctx.cookies.set()` allowing you to control security, domain, path,
   and signing among other settings.
 
+### Hooks
+
+  - `valid()`: valid session value before use it
+  - `beforeSave()`: hook before save session
+
 ### Session#isNew
 
   Returns __true__ if the session is new.

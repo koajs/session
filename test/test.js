@@ -527,6 +527,55 @@ describe('Koa Session', function(){
       });
     })
   })
+
+  describe('when options.encode and options.decode are functions', function () {
+    describe('they are used to encode/decode stored cookie values', function () {
+      it('should work', function (done) {
+        var encodeCallCount = 0
+        var decodeCallCount = 0
+
+        function encode(data) {
+          ++encodeCallCount
+          return JSON.stringify({enveloped: data})
+        }
+        function decode(data) {
+          ++decodeCallCount
+          return JSON.parse(data).enveloped
+        }
+
+        var app = koa();
+        app.keys = ['a', 'b'];
+        app.use(session({
+          encode: encode,
+          decode: decode
+        }, app));
+
+        app.use(function * () {
+          this.session.counter = (this.session.counter || 0) + 1
+          this.body = this.session
+          return
+        })
+
+        request(app.callback())
+          .get('/')
+          .expect(function () { encodeCallCount.should.above(0, 'encode was not called'); })
+          .expect(200, function (err, res) {
+            should.not.exist(err)
+            res.body.counter.should.equal(1, 'expected body to be equal to session.counter')
+            var cookies = res.headers['set-cookie'].join(';');
+            request(app.callback())
+              .get('/')
+              .set('Cookie', cookies)
+              .expect(function () { decodeCallCount.should.be.above(1, 'decode was not called'); })
+              .expect(200, function (err, res) {
+                should.not.exist(err);
+                res.body.counter.should.equal(2);
+                done();
+              })
+          })
+      })
+    })
+  })
 })
 
 function App(options) {

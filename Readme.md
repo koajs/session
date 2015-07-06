@@ -71,6 +71,10 @@ console.log('listening on port 3000');
   `ctx.cookies.set()` allowing you to control security, domain, path,
   and signing among other settings.
 
+#### Custom `encode/decode` Support
+
+  Use `options.encode` and `options.decode` to customize your own encode/decode methods.
+
 ### Hooks
 
   - `valid()`: valid session value before use it

@@ -45,6 +45,14 @@ module.exports = function(opts, app){
     throw new TypeError('app instance required: `session(opts, app)`');
   }
 
+  // setup encoding/decoding
+  if (!(typeof opts.encode === 'function')) {
+    opts.encode = encode
+  }
+  if (!(typeof opts.decode === 'function')) {
+    opts.decode = decode
+  }
+
   // to pass to Session()
   app.context.sessionKey = opts.key;
 
@@ -63,7 +71,7 @@ module.exports = function(opts, app){
       try {
         // make sure sessionOptions exists
         initSessionOptions(this, opts);
-        var obj = decode(json);
+        var obj = opts.decode(json);
         if (typeof opts.valid === 'function' && !opts.valid(this, obj)) {
           // valid session value fail, ignore this session
           sess = new Session(this);
@@ -72,7 +80,7 @@ module.exports = function(opts, app){
         } else {
           sess = new Session(this, obj);
           // make prev a different object from sess
-          json = decode(json);
+          json = opts.decode(json);
         }
       } catch (err) {
         // backwards compatibility:
@@ -278,9 +286,14 @@ Session.prototype.save = function(){
   json._expire = maxAge + Date.now();
   json._maxAge = maxAge;
 
-  json = encode(json);
-  debug('save %s', json);
-  ctx.cookies.set(key, json, opts);
+  try {
+    json = opts.encode(json);
+    debug('save %s', json);
+    ctx.cookies.set(key, json, opts);
+  } catch (e) {
+    debug('encode %j error: %s', json, err);
+    ctx.cookies.set(key, '', opts);
+  }
 };
 
 /**

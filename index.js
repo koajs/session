@@ -46,10 +46,10 @@ module.exports = function(opts, app){
   }
 
   // setup encoding/decoding
-  if (!(typeof opts.encode === 'function')) {
+  if (typeof opts.encode !== 'function') {
     opts.encode = encode
   }
-  if (!(typeof opts.decode === 'function')) {
+  if (typeof opts.decode !== 'function') {
     opts.decode = decode
   }
 
@@ -289,11 +289,11 @@ Session.prototype.save = function(){
   try {
     json = opts.encode(json);
     debug('save %s', json);
-    ctx.cookies.set(key, json, opts);
   } catch (e) {
     debug('encode %j error: %s', json, err);
-    ctx.cookies.set(key, '', opts);
+    json = '';
   }
+  ctx.cookies.set(key, json, opts);
 };
 
 /**

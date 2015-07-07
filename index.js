@@ -290,7 +290,7 @@ Session.prototype.save = function(){
     json = opts.encode(json);
     debug('save %s', json);
   } catch (e) {
-    debug('encode %j error: %s', json, err);
+    debug('encode %j error: %s', json, e);
     json = '';
   }
   ctx.cookies.set(key, json, opts);

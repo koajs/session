@@ -47,6 +47,9 @@ app.keys = ['some secret hurr'];
 app.use(session(app));
 
 app.use(function *(){
+  // ignore favicon
+  if (this.path === '/favicon.ico') return;
+
   var n = this.session.views || 0;
   this.session.views = ++n;
   this.body = n + ' views';

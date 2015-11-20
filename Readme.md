@@ -58,6 +58,18 @@ app.use(function *(){
 app.listen(3000);
 console.log('listening on port 3000');
 ```
+For Koa 2, use [koa-convert](https://github.com/gyson/koa-convert) to convert the session middleware :
+
+```js
+const koa = require('koa');
+const session = require('koa-session')
+const convert = require('koa-convert');
+
+const app = new koa();
+app.use(convert(session(app)));
+
+// codes
+```
 
 ## Semantics
 

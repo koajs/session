@@ -6,6 +6,50 @@ var session = require('..');
 describe('Koa Session', function(){
   var cookie;
 
+  describe('options.secure', function(){
+    it('should auto detect secure or not on ctx', function(done){
+      var app = koa();
+
+      app.keys = ['a', 'b'];
+      app.use(session({}, app));
+
+      app.use(function *(){
+        this.session.message = 'hi';
+        this.session.secure = this.sessionOptions.secure;
+        this.body = this.session;
+      });
+
+      request(app.callback())
+      .get('/')
+      .expect({
+        message: 'hi',
+        secure: false,
+      })
+      .expect(200, done);
+    });
+
+    it('should use options.secure', function(done){
+      var app = koa();
+
+      app.keys = ['a', 'b'];
+      app.use(session({ secure: false }, app));
+
+      app.use(function *(){
+        this.session.message = 'hi';
+        this.session.secure = this.sessionOptions.secure;
+        this.body = this.session;
+      });
+
+      request(app.callback())
+      .get('/')
+      .expect({
+        message: 'hi',
+        secure: false,
+      })
+      .expect(200, done);
+    });
+  });
+
   describe('when options.signed = true', function(){
     describe('when app.keys are set', function(){
       it('should work', function(done){

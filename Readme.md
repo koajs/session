@@ -26,7 +26,7 @@
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple cookie-based session middleware for Koa.
+Simple cookie-based session middleware for Koa.
 
 ## Installation
 
@@ -36,7 +36,7 @@ $ npm install koa-session
 
 ## Example
 
-  View counter example:
+View counter example:
 
 ```js
 var session = require('koa-session');

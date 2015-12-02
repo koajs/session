@@ -130,6 +130,10 @@ function initSessionOptions(ctx, opts) {
   for (var key in opts) {
     ctx.sessionOptions[key] = opts[key];
   }
+  if (!ctx.sessionOptions.hasOwnProperty('secure')) {
+    // auto set secure on https request
+    ctx.sessionOptions.secure = ctx.secure;
+  }
 }
 
 /**

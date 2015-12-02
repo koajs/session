@@ -13,8 +13,8 @@
     "index.js"
   ],
   "devDependencies": {
-    "istanbul-harmony": "0",
-    "koa": "0",
+    "istanbul": "^0.4.1",
+    "koa": "1",
     "mocha": "2",
     "should": "6",
     "supertest": "1"
@@ -25,8 +25,7 @@
     "deep-equal": "~1.0.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",
-    "test-cov": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should",
-    "test-travis": "NODE_ENV=test node --harmony ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should"
+    "test": "mocha --harmony -r should --reporter spec",
+    "test-cov": "node --harmony ./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -r should"
   }
 }

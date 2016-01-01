@@ -14,9 +14,9 @@
   ],
   "devDependencies": {
     "istanbul-harmony": "0",
-    "koa": "0",
+    "koa": "1.1.2",
     "mocha": "2",
-    "should": "6",
+    "should": "8.0.2",
     "supertest": "1"
   },
   "license": "MIT",

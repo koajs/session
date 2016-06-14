@@ -293,6 +293,12 @@ Session.prototype.save = function(){
     debug('encode %j error: %s', json, e);
     json = '';
   }
+
+  // delete maxAge when user specifies cookie to expire with browser session
+  if (opts.session === true) {
+    delete opts.maxAge;
+  }
+
   ctx.cookies.set(key, json, opts);
 };
 

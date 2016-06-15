@@ -107,6 +107,10 @@ app.use(convert(session(app)));
 
   Set cookie's maxAge.
 
+### Session#session=
+
+  `{session: true}` will set the cookie expiry to the browser session.
+
 ### Destroying a session
 
   To destroy a session simply set it to `null`:

@@ -13,16 +13,16 @@
     "index.js"
   ],
   "devDependencies": {
-    "istanbul-harmony": "0",
-    "koa": "1.1.2",
+    "istanbul": "0",
+    "koa": "1",
     "mocha": "2",
-    "should": "8.0.2",
-    "supertest": "1"
+    "should": "8",
+    "supertest": "2"
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "~2.2.0",
-    "deep-equal": "~1.0.0"
+    "debug": "^2.2.0",
+    "deep-equal": "^1.0.0"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha --harmony --require should --reporter spec",

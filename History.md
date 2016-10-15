@@ -1,4 +1,11 @@
 
+3.4.0 / 2016-10-15
+==================
+
+  * fix: add 'session' name for middleware function (#58)
+  * chore(package): update dependencies
+  * readme: ignore favicon in example
+
 3.3.1 / 2015-07-08
 ==================
 

@@ -109,7 +109,7 @@ module.exports = function(opts, app){
     throw new Error('this.session can only be set as null or an object.');
   });
 
-  return function* (next){
+  return function* session(next){
     // make sessionOptions independent in each request
     initSessionOptions(this, opts);
     try {

@@ -107,6 +107,15 @@ app.use(convert(session(app)));
 ### Session#isNew
 
   Returns __true__ if the session is new.
+  
+ ```js
+if (this.session.isNew) {
+  // user has not logged in
+}
+else {
+  // user has already logged in
+}
+```
 
 ### Session#maxAge
 

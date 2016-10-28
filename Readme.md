@@ -44,7 +44,16 @@ var koa = require('koa');
 var app = koa();
 
 app.keys = ['some secret hurr'];
-app.use(session(app));
+
+var CONFIG = {
+  key: xxx /** (string) cookie key (default is koa:sess) */,
+  maxAge: xxx /** (number) maxAge in ms (default is 1 days) */,
+  overwrite: xxx /** (boolean) can overwrite or not (default true) */,
+  httpOnly: xxx /** (boolean) httpOnly or not (default true) */,
+  signed: xxx /** (boolean) signed or not (default true) */
+};
+app.use(session(CONFIG, app));
+// or if you prefer all default config, just use => app.use(session(app));
 
 app.use(function *(){
   // ignore favicon
@@ -98,6 +107,15 @@ app.use(convert(session(app)));
 ### Session#isNew
 
   Returns __true__ if the session is new.
+  
+ ```js
+if (this.session.isNew) {
+  // user has not logged in
+}
+else {
+  // user has already logged in
+}
+```
 
 ### Session#maxAge
 

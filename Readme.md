@@ -46,11 +46,11 @@ var app = koa();
 app.keys = ['some secret hurr'];
 
 var CONFIG = {
-  key: xxx /** (string) cookie key (default is koa:sess) */,
-  maxAge: xxx /** (number) maxAge in ms (default is 1 days) */,
-  overwrite: xxx /** (boolean) can overwrite or not (default true) */,
-  httpOnly: xxx /** (boolean) httpOnly or not (default true) */,
-  signed: xxx /** (boolean) signed or not (default true) */
+  key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
+  maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
+  overwrite: true, /** (boolean) can overwrite or not (default true) */
+  httpOnly: true, /** (boolean) httpOnly or not (default true) */
+  signed: true, /** (boolean) signed or not (default true) */
 };
 app.use(session(CONFIG, app));
 // or if you prefer all default config, just use => app.use(session(app));
@@ -107,12 +107,11 @@ app.use(convert(session(app)));
 ### Session#isNew
 
   Returns __true__ if the session is new.
-  
- ```js
+
+```js
 if (this.session.isNew) {
   // user has not logged in
-}
-else {
+} else {
   // user has already logged in
 }
 ```

@@ -38,6 +38,7 @@ module.exports = function(opts, app){
   if (null == opts.overwrite) opts.overwrite = true;
   if (null == opts.httpOnly) opts.httpOnly = true;
   if (null == opts.signed) opts.signed = true;
+  if (null == opts.secure) opts.secure = false;
 
   debug('session options %j', opts);
 

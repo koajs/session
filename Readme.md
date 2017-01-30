@@ -51,6 +51,7 @@ var CONFIG = {
   overwrite: true, /** (boolean) can overwrite or not (default true) */
   httpOnly: true, /** (boolean) httpOnly or not (default true) */
   signed: true, /** (boolean) signed or not (default true) */
+  secure: false, /** (boolean) secure or not (default false) */
 };
 app.use(session(CONFIG, app));
 // or if you prefer all default config, just use => app.use(session(app));

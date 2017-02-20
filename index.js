@@ -5,6 +5,7 @@
 var debug = require('debug')('koa-session');
 var crc = require('crc').crc32;
 var uid = require('uid-safe').sync;
+const Session = require('./lib/session');
 
 var ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -232,108 +233,6 @@ function* saveSession(ctx, sess) {
 
   ctx.cookies.set(key, json, opts);
 }
-
-/**
- * Session model.
- *
- * @param {Context} ctx
- * @param {Object} obj
- * @api private
- */
-
-function Session(ctx, obj) {
-  this._ctx = ctx;
-  if (!obj) {
-    this.isNew = true;
-  }
-  else {
-    for (var k in obj) {
-      // change session options
-      if ('_maxAge' == k) this._ctx.sessionOptions.maxAge = obj._maxAge;
-      else this[k] = obj[k];
-    }
-  }
-}
-
-/**
- * JSON representation of the session.
- *
- * @return {Object}
- * @api public
- */
-
-Session.prototype.inspect =
-Session.prototype.toJSON = function(){
-  var self = this;
-  var obj = {};
-
-  Object.keys(this).forEach(function(key){
-    if ('isNew' == key) return;
-    if ('_' == key[0]) return;
-    obj[key] = self[key];
-  });
-
-  return obj;
-};
-
-/**
- * Check if the session has changed relative to the `prev`
- * JSON value from the request.
- *
- * @param {Object} [prev]
- * @return {Boolean}
- * @api private
- */
-
-Session.prototype.changed = function(prev){
-  if (!prev) return true;
-  return hash(sess) !== prev;
-};
-
-/**
- * Return how many values there are in the session object.
- * Used to see if it's "populated".
- *
- * @return {Number}
- * @api public
- */
-
-Session.prototype.__defineGetter__('length', function(){
-  return Object.keys(this.toJSON()).length;
-});
-
-/**
- * populated flag, which is just a boolean alias of .length.
- *
- * @return {Boolean}
- * @api public
- */
-
-Session.prototype.__defineGetter__('populated', function(){
-  return !!this.length;
-});
-
-/**
- * get session maxAge
- *
- * @return {Number}
- * @api public
- */
-
-Session.prototype.__defineGetter__('maxAge', function(){
-  return this._ctx.sessionOptions.maxAge;
-});
-
-/**
- * set session maxAge
- *
- * @param {Number}
- * @api public
- */
-
-Session.prototype.__defineSetter__('maxAge', function(val){
-  this._ctx.sessionOptions.maxAge = val;
-});
 
 /**
  * Decode the base64 cookie value to an object.

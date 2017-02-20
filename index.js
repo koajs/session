@@ -126,7 +126,7 @@ function* commit(ctx, prevHash, sess, opts) {
 
   // removed
   if (false === sess) {
-    ctx.cookies.set(opts.key, '', opts);
+    yield removeSession(ctx);
     return;
   }
   var json = sess.toJSON();
@@ -188,6 +188,17 @@ function initSessionFromCookie(ctx, opts) {
 function initSessionFromNull(ctx) {
   ctx._sess = new Session(ctx);
   ctx._prevSessHash = hash(ctx._sess);
+}
+
+function* removeSession(ctx) {
+  var key = ctx.sessionKey;
+  var opts = ctx.sessionOptions;
+  var externalKey = ctx._sessExternalKey;
+
+  if (externalKey) {
+    yield opts.external.remove(externalKey);
+  }
+  ctx.cookies.set(opts.key, '', opts);
 }
 
 function* saveSession(ctx, sess) {

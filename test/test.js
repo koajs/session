@@ -357,7 +357,6 @@ describe('Koa Session', function(){
             this.body = 200;
             return;
           }
-
           this.body = this.session.message;
         });
 
@@ -566,7 +565,7 @@ describe('Koa Session', function(){
             request(app.callback())
               .get('/')
               .set('Cookie', cookies)
-              .expect(function () { decodeCallCount.should.be.above(1, 'decode was not called'); })
+              .expect(function () { decodeCallCount.should.be.above(0, 'decode was not called'); })
               .expect(200, function (err, res) {
                 should.not.exist(err);
                 res.body.counter.should.equal(2);

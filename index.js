@@ -3,7 +3,8 @@
  */
 
 var debug = require('debug')('koa-session');
-var deepEqual = require('deep-equal');
+var crc = require('crc').crc32;
+var uid = require('uid-safe').sync;
 
 var ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -64,43 +65,12 @@ module.exports = function(opts, app){
     // unset
     if (false === sess) return null;
 
-    var json = this.cookies.get(opts.key, opts);
+    if (opts.external) return null;
 
-    if (json) {
-      debug('parse %s', json);
-      try {
-        // make sure sessionOptions exists
-        initSessionOptions(this, opts);
-        var obj = opts.decode(json);
-        if (typeof opts.valid === 'function' && !opts.valid(this, obj)) {
-          // valid session value fail, ignore this session
-          sess = new Session(this);
-          json = obj;
-          debug('invalid %j', obj);
-        } else {
-          sess = new Session(this, obj);
-          // make prev a different object from sess
-          json = opts.decode(json);
-        }
-      } catch (err) {
-        // backwards compatibility:
-        // create a new session if parsing fails.
-        // new Buffer(string, 'base64') does not seem to crash
-        // when `string` is not base64-encoded.
-        // but `JSON.parse(string)` will crash.
-        debug('decode %j error: %s', json, err);
-        if (!(err instanceof SyntaxError)) throw err;
-        sess = new Session(this);
-        json = null;
-      }
-    } else {
-      debug('new session');
-      sess = new Session(this);
-    }
-
-    this._sess = sess;
-    this._prevjson = json;
-    return sess;
+    // cookie session store
+    initSessionFromCookie(this, opts);
+    if (!this._sess) initSessionFromNull(this);
+    return this._sess;
   });
 
   app.context.__defineSetter__('session', function(val){
@@ -112,12 +82,20 @@ module.exports = function(opts, app){
   return function* session(next){
     // make sessionOptions independent in each request
     initSessionOptions(this, opts);
+    // external session store
+    if (opts.external) {
+      yield initSessionFromExternal(this, opts);
+      if (!this._sess) {
+        initSessionFromNull(this);
+        initSessionKey(this);
+      }
+    }
     try {
-      yield* next;
+      yield next;
     } catch (err) {
       throw err;
     } finally {
-      commit(this, this._prevjson, this._sess, opts);
+      yield commit(this, this._prevSessHash, this._sess, opts);
     }
   };
 };
@@ -142,7 +120,7 @@ function initSessionOptions(ctx, opts) {
  * @api private
  */
 
-function commit(ctx, prevjson, sess, opts) {
+function* commit(ctx, prevHash, sess, opts) {
   // not accessed
   if (undefined === sess) return;
 
@@ -151,17 +129,97 @@ function commit(ctx, prevjson, sess, opts) {
     ctx.cookies.set(opts.key, '', opts);
     return;
   }
-
+  var json = sess.toJSON();
   // do nothing if new and not populated
-  if (!prevjson && !sess.length) return;
+  if (!prevHash && !Object.keys(json).length) return;
+  if (prevHash === hash(json)) return;
 
-  // save
-  if (sess.changed(prevjson)) {
-    if (typeof opts.beforeSave === 'function') {
-      opts.beforeSave(ctx, sess);
-    }
-    sess.save();
+  if (typeof opts.beforeSave === 'function') {
+    debug('before save');
+    opts.beforeSave(ctx, sess);
   }
+  yield saveSession(ctx, sess);
+}
+
+function *initSessionFromExternal(ctx, opts) {
+  var key = ctx.cookies.get(opts.key, opts);
+  if (!key) return null;
+
+  var obj = yield opts.external.get(key, ctx);
+  if (!obj) return null;
+
+  ctx._sess = new Session(ctx, obj);
+  ctx._sessExternalKey = key;
+  ctx._prevjson = hash(ctx._sess);
+}
+
+function initSessionKey(ctx, opts) {
+  ctx._sessExternalKey = uid(24);
+}
+
+function initSessionFromCookie(ctx, opts) {
+  var json = ctx.cookies.get(opts.key, opts);
+  if (!json) return null;
+
+  debug('parse %s', json);
+  try {
+    var obj = opts.decode(json);
+    debug('parsed %j', obj);
+    if (typeof opts.valid === 'function' && !opts.valid(ctx, obj)) {
+      // valid session value fail, ignore this session
+      debug('invalid %j', obj);
+      return null;
+    }
+    initSessionOptions(ctx, opts);
+    ctx._sess = new Session(ctx, obj);
+    ctx._prevSessHash = hash(ctx._sess);
+  } catch (err) {
+    // backwards compatibility:
+    // create a new session if parsing fails.
+    // new Buffer(string, 'base64') does not seem to crash
+    // when `string` is not base64-encoded.
+    // but `JSON.parse(string)` will crash.
+    debug('decode %j error: %s', json, err);
+    if (!(err instanceof SyntaxError)) throw err;
+    return null;
+  }
+}
+
+function initSessionFromNull(ctx) {
+  ctx._sess = new Session(ctx);
+  ctx._prevSessHash = hash(ctx._sess);
+}
+
+function* saveSession(ctx, sess) {
+  var json = sess.toJSON();
+  var opts = ctx.sessionOptions;
+  var key = ctx.sessionKey;
+  var externalKey = ctx._sessExternalKey;
+
+  var maxAge = opts.maxAge || ONE_DAY;
+
+  // save to external store
+  if (externalKey) {
+    debug('save %s to external key %s', json, externalKey);
+    yield opts.external.set(externalKey, json, maxAge);
+    ctx.cookies.set(key, externalKey, opts);
+    return;
+  }
+
+  // save to cookie
+  debug('save %j to cookie', json);
+  try {
+    // set expire into cookie value
+    json._expire = maxAge + Date.now();
+    json._maxAge = maxAge;
+    json = opts.encode(json);
+    debug('save %s', json);
+  } catch (e) {
+    debug('encode %j error: %s', json, e);
+    json = '';
+  }
+
+  ctx.cookies.set(key, json, opts);
 }
 
 /**
@@ -218,9 +276,7 @@ Session.prototype.toJSON = function(){
 
 Session.prototype.changed = function(prev){
   if (!prev) return true;
-  delete prev._expire;
-  delete prev._maxAge;
-  return !deepEqual(prev, this.toJSON());
+  return hash(sess) !== prev;
 };
 
 /**
@@ -269,34 +325,6 @@ Session.prototype.__defineSetter__('maxAge', function(val){
 });
 
 /**
- * Save session changes by
- * performing a Set-Cookie.
- *
- * @api private
- */
-
-Session.prototype.save = function(){
-  var ctx = this._ctx;
-  var json = this.toJSON();
-  var opts = ctx.sessionOptions;
-  var key = ctx.sessionKey;
-
-  // set expire into cookie value
-  var maxAge = opts.maxAge || ONE_DAY;
-  json._expire = maxAge + Date.now();
-  json._maxAge = maxAge;
-
-  try {
-    json = opts.encode(json);
-    debug('save %s', json);
-  } catch (e) {
-    debug('encode %j error: %s', json, e);
-    json = '';
-  }
-  ctx.cookies.set(key, json, opts);
-};
-
-/**
  * Decode the base64 cookie value to an object.
  *
  * @param {String} string
@@ -325,4 +353,9 @@ function decode(string) {
 function encode(body) {
   body = JSON.stringify(body);
   return new Buffer(body).toString('base64');
+}
+
+function hash(sess) {
+  if (sess instanceof Session) sess = sess.toJSON();
+  return crc(JSON.stringify(sess));
 }

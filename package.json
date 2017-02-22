@@ -10,7 +10,8 @@
     "cookie"
   ],
   "files": [
-    "index.js"
+    "index.js",
+    "lib"
   ],
   "devDependencies": {
     "istanbul": "0",

@@ -34,7 +34,6 @@ module.exports = function(opts, app){
 
   return function* session(next) {
     if (this.sess.external) yield this.sess.initFromExternal();
-
     try {
       yield next;
     } catch (err) {

@@ -4,9 +4,9 @@ const koa = require('koa');
 const request = require('supertest');
 const should = require('should');
 const session = require('..');
-const external = require('./external');
+const store = require('./store');
 
-describe('Koa Session External', () => {
+describe('Koa Session External Store', () => {
   let cookie;
 
   describe('when the session contains a ;', () => {
@@ -266,7 +266,7 @@ describe('Koa Session External', () => {
         }
       });
 
-      app.use(session({ external }, app));
+      app.use(session({ store }, app));
 
       app.use(function* (next) {
         this.session.name = 'funny';
@@ -380,6 +380,22 @@ describe('Koa Session External', () => {
     });
   });
 
+  describe('when store return empty', () => {
+    it('should create new Session', done => {
+      const app = App({ signed: false });
+
+      app.use(function* () {
+        this.body = String(this.session.isNew);
+      });
+
+      request(app.listen())
+      .get('/')
+      .set('cookie', 'koa:sess=invalid-key')
+      .expect('true')
+      .expect(200, done);
+    });
+  });
+
   describe('when valid and beforeSave set', () => {
     it('should ignore session when uid changed', done => {
       const app = koa();
@@ -392,7 +408,7 @@ describe('Koa Session External', () => {
         beforeSave(ctx, sess) {
           sess.uid = ctx.cookies.get('uid');
         },
-        external,
+        store,
       }, app));
       app.use(function* () {
         if (!this.session.foo) {
@@ -441,7 +457,7 @@ function App(options) {
   const app = koa();
   app.keys = [ 'a', 'b' ];
   options = options || {};
-  options.external = external;
+  options.store = store;
   app.use(session(options, app));
   return app;
 }

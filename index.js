@@ -32,7 +32,7 @@ module.exports = function(opts, app) {
   extendContext(app.context, opts);
 
   return function* session(next) {
-    if (this.sess.external) yield this.sess.initFromExternal();
+    if (this.sess.store) yield this.sess.initFromExternal();
     try {
       yield next;
     } catch (err) {
@@ -66,10 +66,10 @@ function formatOpts(opts) {
     opts.decode = util.decode;
   }
 
-  if (opts.external) {
-    assert(typeof opts.external.get === 'function', 'external.get must be function');
-    assert(typeof opts.external.set === 'function', 'external.set must be function');
-    assert(typeof opts.external.remove === 'function', 'external.remove must be function');
+  if (opts.store) {
+    assert(typeof opts.store.get === 'function', 'store.get must be function');
+    assert(typeof opts.store.set === 'function', 'store.set must be function');
+    assert(typeof opts.store.destroy === 'function', 'store.remove must be function');
   }
 
   return opts;

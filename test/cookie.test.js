@@ -248,6 +248,139 @@ describe('Koa Session Cookie', () => {
     });
   });
 
+  describe('when get session after set to null', () => {
+    it('should return null', done => {
+      const app = App();
+
+      app.use(function* () {
+        this.session.hello = {};
+        this.session = null;
+        this.body = String(this.session === null);
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('Set-Cookie', /koa:sess=;/)
+      .expect('true')
+      .expect(200, done);
+    });
+  });
+
+  describe('when decode session', () => {
+    describe('SyntaxError', () => {
+      it('should create new session', done => {
+        const app = App({ signed: false });
+
+        app.use(function* () {
+          this.body = String(this.session.isNew);
+        });
+
+        request(app.listen())
+        .get('/')
+        .set('cookie', 'koa:sess=invalid-session;')
+        .expect('true')
+        .expect(200, done);
+      });
+    });
+
+    describe('Other Error', () => {
+      it('should throw', done => {
+        const app = App({
+          signed: false,
+          decode() {
+            throw new Error('decode error');
+          },
+        });
+
+        app.use(function* () {
+          this.body = String(this.session.isNew);
+        });
+
+        request(app.listen())
+        .get('/')
+        .set('cookie', 'koa:sess=invalid-session;')
+        .expect(500, done);
+      });
+    });
+  });
+
+  describe('when encode session error', () => {
+    it('should throw', done => {
+      const app = App({
+        encode() {
+          throw new Error('encode error');
+        },
+      });
+
+      app.use(function* () {
+        this.session.foo = 'bar';
+        this.body = 'hello';
+      });
+
+      app.once('error', (err, ctx) => {
+        err.message.should.equal('encode error');
+        should.exists(ctx);
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect(500, done);
+    });
+  });
+
+  describe('session', () => {
+    describe('.inspect()', () => {
+      it('should return session content', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.foo = 'bar';
+          this.body = this.session.inspect();
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect({ foo: 'bar' })
+        .expect(200, done);
+      });
+    });
+
+    describe('.length', () => {
+      it('should return session length', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.foo = 'bar';
+          this.body = String(this.session.length);
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('1')
+        .expect(200, done);
+      });
+    });
+
+    describe('.populated', () => {
+      it('should return session populated', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.foo = 'bar';
+          this.body = String(this.session.populated);
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('true')
+        .expect(200, done);
+      });
+    });
+  });
+
   describe('when session is', () => {
     describe('null', () => {
       it('should expire the session', done => {

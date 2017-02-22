@@ -251,6 +251,59 @@ describe('Koa Session External Store', () => {
     });
   });
 
+  describe('session', () => {
+    describe('.inspect()', () => {
+      it('should return session content', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.foo = 'bar';
+          this.body = this.session.inspect();
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect({ foo: 'bar' })
+        .expect(200, done);
+      });
+    });
+
+    describe('.length', () => {
+      it('should return session length', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.foo = 'bar';
+          this.body = String(this.session.length);
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('1')
+        .expect(200, done);
+      });
+    });
+
+    describe('.populated', () => {
+      it('should return session populated', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.foo = 'bar';
+          this.body = String(this.session.populated);
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('true')
+        .expect(200, done);
+      });
+    });
+  });
+
   describe('when an error is thrown downstream and caught upstream', () => {
     it('should still save the session', done => {
       const app = koa();

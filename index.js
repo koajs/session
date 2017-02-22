@@ -100,24 +100,11 @@ function extendContext(context, opts) {
   });
 
   context.__defineGetter__('session', function() {
-    const session = this.sess.session;
-    // already retrieved
-    if (session) return session;
-    // unset
-    if (session === false) return null;
-
-    // cookie session store
-    this.sess.initFromCookie(this, opts);
-    return this.sess.session;
+    return this.sess.get();
   });
 
   context.__defineSetter__('session', function(val) {
-    if (val === null) {
-      this.sess.session = false;
-      return;
-    }
-    if (typeof val === 'object') return this.sess.create(val);
-    throw new Error('this.session can only be set as null or an object.');
+    this.sess.set(val);
   });
 
   context.__defineGetter__('sessionOptions', function() {

@@ -43,6 +43,14 @@ module.exports = function(opts, app) {
   };
 };
 
+/**
+ * format and check session options
+ * @param  {Object} opts session options
+ * @return {Object} new session options
+ *
+ * @api private
+ */
+
 function formatOpts(opts) {
   opts = opts || {};
   // key
@@ -75,6 +83,15 @@ function formatOpts(opts) {
   return opts;
 }
 
+/**
+ * extend context prototype, add session properties
+ *
+ * @param  {Object} context koa's context prototype
+ * @param  {Object} opts session options
+ *
+ * @api private
+ */
+
 function extendContext(context, opts) {
   context.__defineGetter__('sess', function() {
     if (this._sess) return this._sess;
@@ -99,7 +116,7 @@ function extendContext(context, opts) {
       this.sess.session = false;
       return;
     }
-    if (typeof val === 'object') return this.sess.createSession(val);
+    if (typeof val === 'object') return this.sess.create(val);
     throw new Error('this.session can only be set as null or an object.');
   });
 

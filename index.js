@@ -1,10 +1,9 @@
-/**
- * Module dependencies.
- */
+'use strict';
 
 const debug = require('debug')('koa-session');
 const ContextSession = require('./lib/context');
 const util = require('./lib/util');
+const assert = require('assert');
 
 /**
  * Initialize session middleware with `opts`:
@@ -17,10 +16,10 @@ const util = require('./lib/util');
  * @api public
  */
 
-module.exports = function(opts, app){
+module.exports = function(opts, app) {
   // session(app[, opts])
   if (opts && typeof opts.use === 'function') {
-    var tmp = app;
+    const tmp = app;
     app = opts;
     opts = tmp;
   }
@@ -53,9 +52,9 @@ function formatOpts(opts) {
   if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
 
   // defaults
-  if (null == opts.overwrite) opts.overwrite = true;
-  if (null == opts.httpOnly) opts.httpOnly = true;
-  if (null == opts.signed) opts.signed = true;
+  if (opts.overwrite == null) opts.overwrite = true;
+  if (opts.httpOnly == null) opts.httpOnly = true;
+  if (opts.signed == null) opts.signed = true;
 
   debug('session options %j', opts);
 
@@ -65,6 +64,12 @@ function formatOpts(opts) {
   }
   if (typeof opts.decode !== 'function') {
     opts.decode = util.decode;
+  }
+
+  if (opts.external) {
+    assert(typeof opts.external.get === 'function', 'external.get must be function');
+    assert(typeof opts.external.set === 'function', 'external.set must be function');
+    assert(typeof opts.external.remove === 'function', 'external.remove must be function');
   }
 
   return opts;
@@ -82,7 +87,7 @@ function extendContext(context, opts) {
     // already retrieved
     if (session) return session;
     // unset
-    if (false === session) return null;
+    if (session === false) return null;
 
     // cookie session store
     this.sess.initFromCookie(this, opts);
@@ -90,8 +95,11 @@ function extendContext(context, opts) {
   });
 
   context.__defineSetter__('session', function(val) {
-    if (null == val) return this.sess.session = false;
-    if ('object' == typeof val) return this.sess.createSession(val);
+    if (val === null) {
+      this.sess.session = false;
+      return;
+    }
+    if (typeof val === 'object') return this.sess.createSession(val);
     throw new Error('this.session can only be set as null or an object.');
   });
 

@@ -28,7 +28,7 @@ describe('Koa Session Cookie', () => {
     });
 
     describe('when app.keys are not set', () => {
-      it('should throw', done => {
+      it('should throw and clean this cookie', done => {
         const app = koa();
 
         app.use(session(app));
@@ -299,6 +299,7 @@ describe('Koa Session Cookie', () => {
         request(app.listen())
         .get('/')
         .set('cookie', 'koa:sess=invalid-session;')
+        .expect('Set-Cookie', /koa:sess=;/)
         .expect(500, done);
       });
     });

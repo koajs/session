@@ -98,7 +98,7 @@ app.use(convert(session(app)));
   - `valid()`: valid session value before use it
   - `beforeSave()`: hook before save session
 
-### External Store
+### External Session Stores
 
   Session will store in cookie by default, but it has some disadvantages:
 
@@ -111,7 +111,7 @@ app.use(convert(session(app)));
   - `set(key, sess, maxAge)`: set session object for key, with a `maxAge` (in ms)
   - `destroy(key)`: destroy session for key
 
-  Once you passed `options.store`, session is strong dependent on your external store, you can't access session if your external store is down.
+  Once you passed `options.store`, session is strong dependent on your external store, you can't access session if your external store is down. **Use external session stores only if necessary, avoid use session as a cache, keep session lean and stored by cookie!**
 
 ### Session#isNew
 
@@ -140,12 +140,6 @@ if (this.session.isNew) {
 ```js
 this.session = null;
 ```
-
-## Session Stores
-
-  This module only supports cookie sessions. There are many other modules listed in [koa's wiki](https://github.com/koajs/koa/wiki#wiki-sessions) for sessions that use database storage. Unlike Connect 2.x's session middleware, there is no main "session" middleware that you plugin different stores - each store is a completely different module.
-
-  If you're interested in creating your own koa session store, feel free to fork/extend this repository and add additional tests. At a minimum, it __should__ pass this repositories' tests that apply. Ideally, there would be a central repository with specifications and tests for all koa sessions, which would allow interoperability and consistency between session modules. If you're interested in working on such a project, let us know!
 
 ## License
 

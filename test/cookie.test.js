@@ -380,6 +380,23 @@ describe('Koa Session Cookie', () => {
         .expect(200, done);
       });
     });
+
+    describe('.save()', () => {
+      it('should save session', done => {
+        const app = App();
+
+        app.use(function* () {
+          this.session.save();
+          this.body = 'hello';
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('hello')
+        .expect(200, done);
+      });
+    });
   });
 
   describe('when session is', () => {

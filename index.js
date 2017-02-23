@@ -5,6 +5,9 @@ const ContextSession = require('./lib/context');
 const util = require('./lib/util');
 const assert = require('assert');
 
+const CONTEXT_SESSION = Symbol('context#contextSession');
+const _CONTEXT_SESSION = Symbol('context#_contextSession');
+
 /**
  * Initialize session middleware with `opts`:
  *
@@ -32,13 +35,14 @@ module.exports = function(opts, app) {
   extendContext(app.context, opts);
 
   return function* session(next) {
-    if (this.sess.store) yield this.sess.initFromExternal();
+    const sess = this[CONTEXT_SESSION];
+    if (sess.store) yield sess.initFromExternal();
     try {
       yield next;
     } catch (err) {
       throw err;
     } finally {
-      yield this.sess.commit();
+      yield sess.commit();
     }
   };
 };
@@ -93,21 +97,26 @@ function formatOpts(opts) {
  */
 
 function extendContext(context, opts) {
-  context.__defineGetter__('sess', function() {
-    if (this._sess) return this._sess;
-    this._sess = new ContextSession(this, opts);
-    return this._sess;
-  });
-
-  context.__defineGetter__('session', function() {
-    return this.sess.get();
-  });
-
-  context.__defineSetter__('session', function(val) {
-    this.sess.set(val);
-  });
-
-  context.__defineGetter__('sessionOptions', function() {
-    return this.sess.opts;
+  Object.defineProperties(context, {
+    [CONTEXT_SESSION]: {
+      get() {
+        if (this[_CONTEXT_SESSION]) return this[_CONTEXT_SESSION];
+        this[_CONTEXT_SESSION] = new ContextSession(this, opts);
+        return this[_CONTEXT_SESSION];
+      },
+    },
+    session: {
+      get() {
+        return this[CONTEXT_SESSION].get();
+      },
+      set(val) {
+        this[CONTEXT_SESSION].set(val);
+      },
+    },
+    sessionOptions: {
+      get() {
+        return this[CONTEXT_SESSION].opts;
+      },
+    },
   });
 }

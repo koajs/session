@@ -81,7 +81,7 @@ function formatOpts(opts) {
   if (opts.store) {
     assert(typeof opts.store.get === 'function', 'store.get must be function');
     assert(typeof opts.store.set === 'function', 'store.set must be function');
-    assert(typeof opts.store.destroy === 'function', 'store.remove must be function');
+    assert(typeof opts.store.destroy === 'function', 'store.destroy must be function');
   }
 
   return opts;

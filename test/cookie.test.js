@@ -593,6 +593,34 @@ describe('Koa Session Cookie', () => {
       .expect('Set-Cookie', /expires=/)
       .expect(200, done);
     });
+
+    it('should save even session not change', done => {
+      const app = App();
+
+      app.use(function* () {
+        this.session.maxAge = 100;
+        this.body = this.session;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('Set-Cookie', /expires=/)
+      .expect(200, done);
+    });
+
+    it('should save when create session only with maxAge', done => {
+      const app = App();
+
+      app.use(function* () {
+        this.session = { maxAge: 100 };
+        this.body = this.session;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect('Set-Cookie', /expires=/)
+      .expect(200, done);
+    });
   });
 
   describe('when get session before enter session middleware', () => {

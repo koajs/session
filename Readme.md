@@ -102,14 +102,16 @@ app.use(convert(session(app)));
 
   Session will store in cookie by default, but it has some disadvantages:
 
-    - Session stored in client side unencrypted.
-    - [Browser cookie always have length limit](http://browsercookielimits.squawky.net/).
+  - Session stored in client side unencrypted.
+  - [Browser cookie always have length limit](http://browsercookielimits.squawky.net/).
+
 
   You can store the session content in external stores(redis, mongodb or other DBs) by pass `options.store` with three methods(need to be generator function or async function):
 
   - `get(key)`: get session object by key
   - `set(key, sess, maxAge)`: set session object for key, with a `maxAge` (in ms)
   - `destroy(key)`: destroy session for key
+
 
   Once you passed `options.store`, session is strong dependent on your external store, you can't access session if your external store is down. **Use external session stores only if necessary, avoid use session as a cache, keep session lean and stored by cookie!**
 

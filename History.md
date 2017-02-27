@@ -1,4 +1,19 @@
 
+4.0.0 / 2017-02-27
+==================
+
+  * [BREAKING CHANGE]: Drop support for node < 4.
+  * [BREAKING CHANGE]: Internal implementations are changed, so some private API is changed.
+    * Change private api `session.save()`, won't set cookie immediately now.
+    * Remove private api `session.changed()`.
+    * Remove undocumented property context.sessionKey, can use opts.key instead.
+    * Change undocumented property context.sessionOptions to getter.
+  * feat: Support external store by pass options.store.
+  * feat: Throw when encode session error, consider a breaking change.
+  * feat: Clean cookie when decode session throw error, ensure next request won't throw again.
+  * fix: Customize options.decode will check expired now
+  * docs: Remove Semantics in README because it's not "guest" sessions any more
+
 3.4.0 / 2016-10-15
 ==================
 

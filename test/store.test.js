@@ -3,6 +3,7 @@
 const koa = require('koa');
 const request = require('supertest');
 const should = require('should');
+const mm = require('mm');
 const session = require('..');
 const store = require('./store');
 
@@ -549,6 +550,30 @@ describe('Koa Session External Store', () => {
       });
     });
   });
+
+  describe('ctx.session', () => {
+    after(mm.restore);
+
+    it('should be mocked', done => {
+      const app = App();
+
+      app.use(function* () {
+        this.body = this.session;
+      });
+
+      mm(app.context, 'session', {
+        foo: 'bar',
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect({
+        foo: 'bar',
+      })
+      .expect(200, done);
+    });
+  });
+
 });
 
 function App(options) {

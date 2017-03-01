@@ -112,6 +112,7 @@ function extendContext(context, opts) {
       set(val) {
         this[CONTEXT_SESSION].set(val);
       },
+      configurable: true,
     },
     sessionOptions: {
       get() {

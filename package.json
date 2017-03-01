@@ -18,6 +18,7 @@
     "eslint-config-egg": "3",
     "istanbul": "0",
     "koa": "1",
+    "mm": "^2.1.0",
     "mocha": "3 ",
     "should": "8",
     "supertest": "2"

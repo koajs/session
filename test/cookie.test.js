@@ -16,7 +16,7 @@ describe('Koa Session Cookie', () => {
         app.keys = [ 'a', 'b' ];
         app.use(session({}, app));
 
-        app.use(async function (ctx) {
+        app.use(async function(ctx) {
           ctx.session.message = 'hi';
           ctx.body = ctx.session;
         });

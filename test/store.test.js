@@ -1,6 +1,6 @@
 'use strict';
 
-const koa = require('koa');
+const Koa = require('koa');
 const request = require('supertest');
 const should = require('should');
 const mm = require('mm');
@@ -14,12 +14,12 @@ describe('Koa Session External Store', () => {
     it('should still work', done => {
       const app = App();
 
-      app.use(function* () {
-        if (this.method === 'POST') {
-          this.session.string = ';';
-          this.status = 204;
+      app.use(async function(ctx) {
+        if (ctx.method === 'POST') {
+          ctx.session.string = ';';
+          ctx.status = 204;
         } else {
-          this.body = this.session.string;
+          ctx.body = ctx.session.string;
         }
       });
 
@@ -43,8 +43,8 @@ describe('Koa Session External Store', () => {
       it('should not Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.body = 'greetings';
+        app.use(async function(ctx) {
+          ctx.body = 'greetings';
         });
 
         request(app.listen())
@@ -61,9 +61,9 @@ describe('Koa Session External Store', () => {
       it('should not Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session;
-          this.body = 'greetings';
+        app.use(async function(ctx) {
+          ctx.session;
+          ctx.body = 'greetings';
         });
 
         request(app.listen())
@@ -80,9 +80,9 @@ describe('Koa Session External Store', () => {
       it('should Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.message = 'hello';
-          this.body = '';
+        app.use(async function(ctx) {
+          ctx.session.message = 'hello';
+          ctx.body = '';
         });
 
         request(app.listen())
@@ -98,8 +98,8 @@ describe('Koa Session External Store', () => {
       it('should not Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.body = this.session;
+        app.use(async function(ctx) {
+          ctx.body = ctx.session;
         });
 
         request(app.listen())
@@ -118,8 +118,8 @@ describe('Koa Session External Store', () => {
       it('should not Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.body = 'aklsdjflasdjf';
+        app.use(async function(ctx) {
+          ctx.body = 'aklsdjflasdjf';
         });
 
         request(app.listen())
@@ -137,9 +137,9 @@ describe('Koa Session External Store', () => {
       it('should be the same session', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.message.should.equal('hello');
-          this.body = 'aklsdjflasdjf';
+        app.use(async function(ctx) {
+          ctx.session.message.should.equal('hello');
+          ctx.body = 'aklsdjflasdjf';
         });
 
         request(app.listen())
@@ -151,9 +151,9 @@ describe('Koa Session External Store', () => {
       it('should not Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.message.should.equal('hello');
-          this.body = 'aklsdjflasdjf';
+        app.use(async function(ctx) {
+          ctx.session.message.should.equal('hello');
+          ctx.body = 'aklsdjflasdjf';
         });
 
         request(app.listen())
@@ -171,9 +171,9 @@ describe('Koa Session External Store', () => {
       it('should Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.money = '$$$';
-          this.body = 'aklsdjflasdjf';
+        app.use(async function(ctx) {
+          ctx.session.money = '$$$';
+          ctx.body = 'aklsdjflasdjf';
         });
 
         request(app.listen())
@@ -190,9 +190,9 @@ describe('Koa Session External Store', () => {
       it('should expire the session', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session = null;
-          this.body = 'asdf';
+        app.use(async function(ctx) {
+          ctx.session = null;
+          ctx.body = 'asdf';
         });
 
         request(app.listen())
@@ -206,9 +206,9 @@ describe('Koa Session External Store', () => {
       it('should not Set-Cookie', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session = {};
-          this.body = 'asdf';
+        app.use(async function(ctx) {
+          ctx.session = {};
+          ctx.body = 'asdf';
         });
 
         request(app.listen())
@@ -225,9 +225,9 @@ describe('Koa Session External Store', () => {
       it('should create a session', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session = { message: 'hello' };
-          this.body = 'asdf';
+        app.use(async function(ctx) {
+          ctx.session = { message: 'hello' };
+          ctx.body = 'asdf';
         });
 
         request(app.listen())
@@ -241,8 +241,8 @@ describe('Koa Session External Store', () => {
       it('should throw', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session = 'asdf';
+        app.use(async function(ctx) {
+          ctx.session = 'asdf';
         });
 
         request(app.listen())
@@ -257,9 +257,9 @@ describe('Koa Session External Store', () => {
       it('should return session content', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.foo = 'bar';
-          this.body = this.session.inspect();
+        app.use(async function(ctx) {
+          ctx.session.foo = 'bar';
+          ctx.body = ctx.session.inspect();
         });
 
         request(app.listen())
@@ -274,9 +274,9 @@ describe('Koa Session External Store', () => {
       it('should return session length', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.foo = 'bar';
-          this.body = String(this.session.length);
+        app.use(async function(ctx) {
+          ctx.session.foo = 'bar';
+          ctx.body = String(ctx.session.length);
         });
 
         request(app.listen())
@@ -291,9 +291,9 @@ describe('Koa Session External Store', () => {
       it('should return session populated', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.foo = 'bar';
-          this.body = String(this.session.populated);
+        app.use(async function(ctx) {
+          ctx.session.foo = 'bar';
+          ctx.body = String(ctx.session.populated);
         });
 
         request(app.listen())
@@ -308,9 +308,9 @@ describe('Koa Session External Store', () => {
       it('should save session', done => {
         const app = App();
 
-        app.use(function* () {
-          this.session.save();
-          this.body = 'hello';
+        app.use(async function(ctx) {
+          ctx.session.save();
+          ctx.body = 'hello';
         });
 
         request(app.listen())
@@ -324,28 +324,28 @@ describe('Koa Session External Store', () => {
 
   describe('when an error is thrown downstream and caught upstream', () => {
     it('should still save the session', done => {
-      const app = koa();
+      const app = new Koa();
 
       app.keys = [ 'a', 'b' ];
 
-      app.use(function* (next) {
+      app.use(async function(ctx, next) {
         try {
-          yield next;
+          await next();
         } catch (err) {
-          this.status = err.status;
-          this.body = err.message;
+          ctx.status = err.status;
+          ctx.body = err.message;
         }
       });
 
       app.use(session({ store }, app));
 
-      app.use(function* (next) {
-        this.session.name = 'funny';
-        yield next;
+      app.use(async function(ctx, next) {
+        ctx.session.name = 'funny';
+        await next();
       });
 
-      app.use(function* () {
-        this.throw(401);
+      app.use(async function(ctx) {
+        ctx.throw(401);
       });
 
       request(app.listen())
@@ -360,13 +360,13 @@ describe('Koa Session External Store', () => {
       it('should not expire the session', done => {
         const app = App({ maxAge: 100 });
 
-        app.use(function* () {
-          if (this.method === 'POST') {
-            this.session.message = 'hi';
-            this.body = 200;
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
             return;
           }
-          this.body = this.session.message;
+          ctx.body = ctx.session.message;
         });
 
         const server = app.listen();
@@ -390,14 +390,14 @@ describe('Koa Session External Store', () => {
       it('should expire the sess', done => {
         const app = App({ maxAge: 100 });
 
-        app.use(function* () {
-          if (this.method === 'POST') {
-            this.session.message = 'hi';
-            this.status = 200;
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.status = 200;
             return;
           }
 
-          this.body = this.session.message || '';
+          ctx.body = ctx.session.message || '';
         });
 
         const server = app.listen();
@@ -424,8 +424,8 @@ describe('Koa Session External Store', () => {
     it('should return opt.maxAge', done => {
       const app = App({ maxAge: 100 });
 
-      app.use(function* () {
-        this.body = this.session.maxAge;
+      app.use(async function(ctx) {
+        ctx.body = ctx.session.maxAge;
       });
 
       request(app.listen())
@@ -438,10 +438,10 @@ describe('Koa Session External Store', () => {
     it('should set sessionOptions.maxAge', done => {
       const app = App();
 
-      app.use(function* () {
-        this.session.foo = 'bar';
-        this.session.maxAge = 100;
-        this.body = this.session.foo;
+      app.use(async function(ctx) {
+        ctx.session.foo = 'bar';
+        ctx.session.maxAge = 100;
+        ctx.body = ctx.session.foo;
       });
 
       request(app.listen())
@@ -453,9 +453,9 @@ describe('Koa Session External Store', () => {
     it('should save even session not change', done => {
       const app = App();
 
-      app.use(function* () {
-        this.session.maxAge = 100;
-        this.body = this.session;
+      app.use(async function(ctx) {
+        ctx.session.maxAge = 100;
+        ctx.body = ctx.session;
       });
 
       request(app.listen())
@@ -467,9 +467,9 @@ describe('Koa Session External Store', () => {
     it('should save when create session only with maxAge', done => {
       const app = App();
 
-      app.use(function* () {
-        this.session = { maxAge: 100 };
-        this.body = this.session;
+      app.use(async function(ctx) {
+        ctx.session = { maxAge: 100 };
+        ctx.body = ctx.session;
       });
 
       request(app.listen())
@@ -483,8 +483,8 @@ describe('Koa Session External Store', () => {
     it('should create new Session', done => {
       const app = App({ signed: false });
 
-      app.use(function* () {
-        this.body = String(this.session.isNew);
+      app.use(async function(ctx) {
+        ctx.body = String(ctx.session.isNew);
       });
 
       request(app.listen())
@@ -497,7 +497,7 @@ describe('Koa Session External Store', () => {
 
   describe('when valid and beforeSave set', () => {
     it('should ignore session when uid changed', done => {
-      const app = koa();
+      const app = new Koa();
 
       app.keys = [ 'a', 'b' ];
       app.use(session({
@@ -509,14 +509,14 @@ describe('Koa Session External Store', () => {
         },
         store,
       }, app));
-      app.use(function* () {
-        if (!this.session.foo) {
-          this.session.foo = Date.now() + '|uid:' + this.cookies.get('uid');
+      app.use(async function(ctx) {
+        if (!ctx.session.foo) {
+          ctx.session.foo = Date.now() + '|uid:' + ctx.cookies.get('uid');
         }
 
-        this.body = {
-          foo: this.session.foo,
-          uid: this.cookies.get('uid'),
+        ctx.body = {
+          foo: ctx.session.foo,
+          uid: ctx.cookies.get('uid'),
         };
       });
 
@@ -557,8 +557,8 @@ describe('Koa Session External Store', () => {
     it('should be mocked', done => {
       const app = App();
 
-      app.use(function* () {
-        this.body = this.session;
+      app.use(async function(ctx) {
+        ctx.body = ctx.session;
       });
 
       mm(app.context, 'session', {
@@ -573,11 +573,10 @@ describe('Koa Session External Store', () => {
       .expect(200, done);
     });
   });
-
 });
 
 function App(options) {
-  const app = koa();
+  const app = new Koa();
   app.keys = [ 'a', 'b' ];
   options = options || {};
   options.store = store;

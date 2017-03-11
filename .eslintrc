@@ -1,3 +1,7 @@
 {
   "extends": "eslint-config-egg",
+  "parser": "babel-eslint",
+  "plugins": [
+    "babel"
+  ]
 }

@@ -14,12 +14,14 @@
     "lib"
   ],
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "eslint-plugin-babel": "^3.1.0",
     "eslint": "3",
     "eslint-config-egg": "3",
     "istanbul": "0",
-    "koa": "1",
+    "koa": "2",
     "mm": "^2.1.0",
-    "mocha": "3 ",
+    "mocha": "3",
     "should": "8",
     "supertest": "2"
   },

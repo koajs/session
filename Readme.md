@@ -106,7 +106,7 @@ app.use(convert(session(app)));
   - [Browser cookie always have length limit](http://browsercookielimits.squawky.net/).
 
 
-  You can store the session content in external stores(redis, mongodb or other DBs) by pass `options.store` with three methods(need to be generator function or async function):
+  You can store the session content in external stores(redis, mongodb or other DBs) by pass `options.store` with three methods(need to be async function):
 
   - `get(key)`: get session object by key
   - `set(key, sess, maxAge)`: set session object for key, with a `maxAge` (in ms)

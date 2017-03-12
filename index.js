@@ -34,15 +34,15 @@ module.exports = function(opts, app) {
   opts = formatOpts(opts);
   extendContext(app.context, opts);
 
-  return function* session(next) {
-    const sess = this[CONTEXT_SESSION];
-    if (sess.store) yield sess.initFromExternal();
+  return async function session(ctx, next) {
+    const sess = ctx[CONTEXT_SESSION];
+    if (sess.store) await sess.initFromExternal();
     try {
-      yield next;
+      await next();
     } catch (err) {
       throw err;
     } finally {
-      yield sess.commit();
+      await sess.commit();
     }
   };
 };

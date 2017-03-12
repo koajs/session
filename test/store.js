@@ -3,15 +3,15 @@
 const sessions = {};
 
 module.exports = {
-  * get(key) {
+  async get(key) {
     return sessions[key];
   },
 
-  * set(key, value) {
+  async set(key, value) {
     sessions[key] = value;
   },
 
-  * destroy(key) {
+  async destroy(key) {
     sessions[key] = undefined;
   },
 };

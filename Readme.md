@@ -39,13 +39,13 @@ $ npm install koa-session
   View counter example:
 
 ```js
-var session = require('koa-session');
-var koa = require('koa');
-var app = koa();
+const session = require('koa-session');
+const Koa = require('koa');
+const app = new koa();
 
 app.keys = ['some secret hurr'];
 
-var CONFIG = {
+const CONFIG = {
   key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
   maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
   overwrite: true, /** (boolean) can overwrite or not (default true) */
@@ -55,29 +55,17 @@ var CONFIG = {
 app.use(session(CONFIG, app));
 // or if you prefer all default config, just use => app.use(session(app));
 
-app.use(function *(){
+app.use(ctx => {
   // ignore favicon
-  if (this.path === '/favicon.ico') return;
+  if (ctx.path === '/favicon.ico') return;
 
-  var n = this.session.views || 0;
-  this.session.views = ++n;
-  this.body = n + ' views';
-})
+  let n = ctx.session.views || 0;
+  ctx.session.views = ++n;
+  ctx.body = n + ' views';
+});
 
 app.listen(3000);
 console.log('listening on port 3000');
-```
-For Koa 2, use [koa-convert](https://github.com/gyson/koa-convert) to convert the session middleware :
-
-```js
-const koa = require('koa');
-const session = require('koa-session')
-const convert = require('koa-convert');
-
-const app = new koa();
-app.use(convert(session(app)));
-
-// codes
 ```
 
 ## API

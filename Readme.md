@@ -26,7 +26,7 @@
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple cookie-based session middleware for Koa.
+ Simple session middleware for Koa. default is cookie-based session and support external store.
 
 ## Installation
 
@@ -122,6 +122,10 @@ if (this.session.isNew) {
 ### Session#maxAge=
 
   Set cookie's maxAge.
+
+### Session#save()
+
+  Save this session no matter whether it is populated.
 
 ### Destroying a session
 

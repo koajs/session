@@ -108,9 +108,9 @@ function extendContext(context, opts) {
     regenerateSession: {
       get() {
         return async() => {
-            await this[_CONTEXT_SESSION].regenerate()
-        }
-      }
+          await this[_CONTEXT_SESSION].regenerate();
+        };
+      },
     },
     session: {
       get() {

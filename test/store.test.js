@@ -356,6 +356,34 @@ describe('Koa Session External Store', () => {
   });
 
   describe('when maxAge present', () => {
+    describe('and set to be a session cookie', () => {
+      it('should not expire the session', done => {
+        const app = App({ maxAge: 'session' });
+
+        app.use(function* () {
+          if (this.method === 'POST') {
+            this.session.message = 'hi';
+            this.body = 200;
+            return;
+          }
+          this.body = this.session.message;
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .end((err, res) => {
+          if (err) return done(err);
+          const cookie = res.headers['set-cookie'].join(';');
+
+          request(server)
+          .get('/')
+          .set('cookie', cookie)
+          .expect('hi', done);
+        });
+      });
+    });
     describe('and not expire', () => {
       it('should not expire the session', done => {
         const app = App({ maxAge: 100 });

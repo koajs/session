@@ -47,7 +47,10 @@ app.keys = ['some secret hurr'];
 
 var CONFIG = {
   key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
-  maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
+  /** (number) maxAge in ms (default is 1 days) */
+    maxAge: 86400000,
+  /** string: 'session' will result in a cookie that expires when session/browser is closed */
+    maxAge: 'session',
   overwrite: true, /** (boolean) can overwrite or not (default true) */
   httpOnly: true, /** (boolean) httpOnly or not (default true) */
   signed: true, /** (boolean) signed or not (default true) */

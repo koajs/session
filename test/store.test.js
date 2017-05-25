@@ -376,7 +376,33 @@ describe('Koa Session External Store', () => {
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
+          cookie.should.not.containEql('expires=');
+          request(server)
+          .get('/')
+          .set('cookie', cookie)
+          .expect('hi', done);
+        });
+      });
+      it('should use the default maxAge when improper string given', done => {
+        const app = App({ maxAge: 'not the right string' });
 
+        app.use(function* () {
+          if (this.method === 'POST') {
+            this.session.message = 'hi';
+            this.body = 200;
+            return;
+          }
+          this.body = this.session.message;
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .end((err, res) => {
+          if (err) return done(err);
+          const cookie = res.headers['set-cookie'].join(';');
+          cookie.should.containEql('expires=');
           request(server)
           .get('/')
           .set('cookie', cookie)

@@ -1,4 +1,9 @@
 
+5.1.0 / 2017-06-01
+==================
+
+  * Create capability to create cookies that expire when browser is close… (#77)
+
 5.0.0 / 2017-03-12
 ==================
 

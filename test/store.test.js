@@ -360,13 +360,13 @@ describe('Koa Session External Store', () => {
       it('should not expire the session', done => {
         const app = App({ maxAge: 'session' });
 
-        app.use(function* () {
-          if (this.method === 'POST') {
-            this.session.message = 'hi';
-            this.body = 200;
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
             return;
           }
-          this.body = this.session.message;
+          ctx.body = ctx.session.message;
         });
         const server = app.listen();
 
@@ -386,13 +386,13 @@ describe('Koa Session External Store', () => {
       it('should use the default maxAge when improper string given', done => {
         const app = App({ maxAge: 'not the right string' });
 
-        app.use(function* () {
-          if (this.method === 'POST') {
-            this.session.message = 'hi';
-            this.body = 200;
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
             return;
           }
-          this.body = this.session.message;
+          ctx.body = ctx.session.message;
         });
         const server = app.listen();
 

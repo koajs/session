@@ -26,7 +26,9 @@
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple session middleware for Koa. default is cookie-based session and support external store.
+ Simple session middleware for Koa. default is cookie-based session and support external store. 
+
+ *Requires Node 7.6 or greater for async/await support*
 
 ## Installation
 

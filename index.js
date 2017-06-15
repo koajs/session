@@ -4,6 +4,7 @@ const debug = require('debug')('koa-session');
 const ContextSession = require('./lib/context');
 const util = require('./lib/util');
 const assert = require('assert');
+const is = require('is-type-of');
 
 const CONTEXT_SESSION = Symbol('context#contextSession');
 const _CONTEXT_SESSION = Symbol('context#_contextSession');
@@ -78,10 +79,19 @@ function formatOpts(opts) {
     opts.decode = util.decode;
   }
 
-  if (opts.store) {
-    assert(typeof opts.store.get === 'function', 'store.get must be function');
-    assert(typeof opts.store.set === 'function', 'store.set must be function');
-    assert(typeof opts.store.destroy === 'function', 'store.destroy must be function');
+  const store = opts.store;
+  if (store) {
+    assert(is.function(store.get), 'store.get must be function');
+    assert(is.function(store.set), 'store.set must be function');
+    assert(is.function(store.destroy), 'store.destroy must be function');
+  }
+
+  const ContextStore = opts.ContextStore;
+  if (ContextStore) {
+    assert(is.class(ContextStore), 'ContextStore must be a class');
+    assert(is.function(ContextStore.prototype.get), 'ContextStore.prototype.get must be function');
+    assert(is.function(ContextStore.prototype.set), 'ContextStore.prototype.set must be function');
+    assert(is.function(ContextStore.prototype.destroy), 'ContextStore.prototype.destroy must be function');
   }
 
   return opts;

@@ -634,7 +634,6 @@ describe('Koa Session External Store', () => {
       app = App({ rolling: true });
 
       app.use(function* () {
-        console.log(this.path);
         if (this.path === '/set') this.session = { foo: 'bar' };
         this.body = this.session;
       });

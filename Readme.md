@@ -54,8 +54,9 @@ var CONFIG = {
   overwrite: true, /** (boolean) can overwrite or not (default true) */
   httpOnly: true, /** (boolean) httpOnly or not (default true) */
   signed: true, /** (boolean) signed or not (default true) */
-  rolling: false, /** (boolean) rolling session, always reset the cookie and sessions, default is false **/
+  rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. default is false **/
 };
+
 app.use(session(CONFIG, app));
 // or if you prefer all default config, just use => app.use(session(app));
 
@@ -112,8 +113,8 @@ app.use(convert(session(app)));
 
   You can store the session content in external stores(redis, mongodb or other DBs) by pass `options.store` with three methods(need to be generator function or async function):
 
-  - `get(key)`: get session object by key
-  - `set(key, sess, maxAge)`: set session object for key, with a `maxAge` (in ms)
+  - `get(key, maxAge, { rolling })`: get session object by key
+  - `set(key, sess, maxAge, { rolling, changed })`: set session object for key, with a `maxAge` (in ms)
   - `destroy(key)`: destroy session for key
 
 

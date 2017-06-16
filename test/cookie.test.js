@@ -755,6 +755,46 @@ describe('Koa Session Cookie', () => {
       });
     });
   });
+
+  describe('when rolling set to true', () => {
+    let app;
+    before(() => {
+      app = App({ rolling: true });
+
+      app.use(function* () {
+        console.log(this.path);
+        if (this.path === '/set') this.session = { foo: 'bar' };
+        this.body = this.session;
+      });
+    });
+
+    it('should not send set-cookie when session not exists', () => {
+      return request(app.callback())
+      .get('/')
+      .expect({})
+      .expect(res => {
+        should.not.exist(res.headers['set-cookie']);
+      });
+    });
+
+    it('should send set-cookie when session exists and not change', done => {
+      request(app.callback())
+      .get('/set')
+      .expect({ foo: 'bar' })
+      .end((err, res) => {
+        should.not.exist(err);
+        res.headers['set-cookie'].should.have.length(2);
+        const cookie = res.headers['set-cookie'].join(';');
+        request(app.callback())
+        .get('/')
+        .set('cookie', cookie)
+        .expect(res => {
+          res.headers['set-cookie'].should.have.length(2);
+        })
+        .expect({ foo: 'bar' }, done);
+      });
+    });
+  });
 });
 
 function App(options) {

@@ -105,13 +105,6 @@ function extendContext(context, opts) {
         return this[_CONTEXT_SESSION];
       },
     },
-    regenerateSession: {
-      get() {
-        return async() => {
-          await this[_CONTEXT_SESSION].regenerate();
-        };
-      },
-    },
     session: {
       get() {
         return this[CONTEXT_SESSION].get();

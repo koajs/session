@@ -118,6 +118,8 @@ app.use(convert(session(app)));
 
   Once you passed `options.store`, session is strong dependent on your external store, you can't access session if your external store is down. **Use external session stores only if necessary, avoid use session as a cache, keep session lean and stored by cookie!**
 
+  The way of generating external session id is controlled by the `options.genid`, which defaults to `uid.sync(24)`.
+
   If your session store requires data or utilities from context, `opts.ContextStore` is alse supported. `ContextStore` must be a class which claims three instance methods demonstrated above. `new ContextStore(ctx)` will be executed on every request.
 
 ### Session#isNew

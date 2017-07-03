@@ -91,6 +91,7 @@ describe('Koa Session External Context Store', () => {
         .expect(200, (err, res) => {
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
+          cookie.indexOf('_suffix').should.greaterThan(1);
           done();
         });
       });
@@ -635,6 +636,9 @@ function App(options) {
   app.keys = [ 'a', 'b' ];
   options = options || {};
   options.ContextStore = ContextStore;
+  options.genid = () => {
+    return Date.now() + '_suffix';
+  };
   app.use(session(options, app));
   return app;
 }

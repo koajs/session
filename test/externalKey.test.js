@@ -15,7 +15,7 @@ describe('Koa Session External Key', () => {
           externalKey: {},
         });
       } catch (err) {
-        assert.equal(err.code, 'ERR_ASSERTION');
+        assert.equal(err.message, 'externalKey.get must be function');
       }
     });
   });

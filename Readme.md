@@ -114,6 +114,13 @@ console.log('listening on port 3000');
 
   If your session store requires data or utilities from context, `opts.ContextStore` is alse supported. `ContextStore` must be a class which claims three instance methods demonstrated above. `new ContextStore(ctx)` will be executed on every request.
 
+### Custom External Key 
+
+  External key is used the cookie by default, but you can use `options.externalKey` to customize your own external key methods. `options.externalKey` with two methods:
+
+  - `get(key, opts, ctx)`: get the external key
+  - `set(key, value, opts, ctx)`: set the external key
+
 ### Session#isNew
 
   Returns __true__ if the session is new.

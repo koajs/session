@@ -1,4 +1,10 @@
 
+4.5.0 / 2017-08-04
+==================
+
+**features**
+  * [[`b537dea`](http://github.com/koajs/session/commit/b537deaeb2db352bdcab3be2c8b7578760fc69da)] - feat: support options.prefix for external store (#92) (Yiyu He <<dead_horse@qq.com>>)
+
 4.4.0 / 2017-07-03
 ==================
 

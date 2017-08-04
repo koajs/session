@@ -4,6 +4,7 @@ const debug = require('debug')('koa-session');
 const ContextSession = require('./lib/context');
 const util = require('./lib/util');
 const assert = require('assert');
+const uid = require('uid-safe');
 const is = require('is-type-of');
 
 const CONTEXT_SESSION = Symbol('context#contextSession');
@@ -92,6 +93,11 @@ function formatOpts(opts) {
     assert(is.function(ContextStore.prototype.get), 'ContextStore.prototype.get must be function');
     assert(is.function(ContextStore.prototype.set), 'ContextStore.prototype.set must be function');
     assert(is.function(ContextStore.prototype.destroy), 'ContextStore.prototype.destroy must be function');
+  }
+
+  if (!opts.genid) {
+    if (opts.prefix) opts.genid = () => opts.prefix + uid.sync(24);
+    else opts.genid = () => uid.sync(24);
   }
 
   return opts;

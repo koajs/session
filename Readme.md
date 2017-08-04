@@ -26,7 +26,7 @@
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple session middleware for Koa. default is cookie-based session and support external store.
+ Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores. 
 
  *Requires Node 7.6 or greater for async/await support*
 
@@ -95,20 +95,21 @@ console.log('listening on port 3000');
 
 ### External Session Stores
 
-  Session will store in cookie by default, but it has some disadvantages:
+  The session is stored in a cookie by default, but it has some disadvantages:
 
-  - Session stored in client side unencrypted.
-  - [Browser cookie always have length limit](http://browsercookielimits.squawky.net/).
+  - Session is stored on client side unencrypted
+  - [Browser cookies always have length limits](http://browsercookielimits.squawky.net/)
 
 
-  You can store the session content in external stores(redis, mongodb or other DBs) by pass `options.store` with three methods(need to be async function):
+  You can store the session content in external stores (Redis, MongoDB or other DBs) by passing `options.store` with three methods (these need to be async functions):
 
   - `get(key, maxAge, { rolling })`: get session object by key
   - `set(key, sess, maxAge, { rolling, changed })`: set session object for key, with a `maxAge` (in ms)
   - `destroy(key)`: destroy session for key
 
 
-  Once you passed `options.store`, session is strong dependent on your external store, you can't access session if your external store is down. **Use external session stores only if necessary, avoid use session as a cache, keep session lean and stored by cookie!**
+  Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid uisng session as a cache, keep the session lean, and store it in a cookie if possible!**
+
 
   The way of generating external session id is controlled by the `options.genid`, which defaults to `uid.sync(24)`.
 

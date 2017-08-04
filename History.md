@@ -1,4 +1,15 @@
 
+5.5.0 / 2017-08-04
+==================
+
+**features**
+  * [[`ec88cfb`](http://github.com/koajs/session/commit/ec88cfb095ddbfa9a0db465e3f9e459fb6f92bec)] - feat: support options.prefix for external store (#93) (Yiyu He <<dead_horse@qq.com>>)
+
+5.4.0 / 2017-07-03
+==================
+
+  * feat: opts.genid (#87)
+
 5.3.0 / 2017-06-17
 ==================
 

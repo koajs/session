@@ -666,6 +666,35 @@ describe('Koa Session External Store', () => {
       });
     });
   });
+
+  describe('when prefix present', () => {
+    it('should still work', done => {
+      const app = App({ prefix: 'sess:' });
+
+      app.use(function* () {
+        if (this.method === 'POST') {
+          this.session.string = ';';
+          this.status = 204;
+        } else {
+          this.body = this.session.string;
+        }
+      });
+
+      const server = app.listen();
+
+      request(server)
+      .post('/')
+      .expect(204, (err, res) => {
+        if (err) return done(err);
+        const cookie = res.headers['set-cookie'];
+        cookie.join().should.match(/koa:sess=sess:/);
+        request(server)
+        .get('/')
+        .set('Cookie', cookie.join(';'))
+        .expect(';', done);
+      });
+    });
+  });
 });
 
 function App(options) {

@@ -606,6 +606,32 @@ describe('Koa Session External Context Store', () => {
     });
   });
 
+  describe('when headers are sent', () => {
+    it('should not commit', done => {
+      const app = App();
+      let appError;
+      app.on('error', err => {
+        appError = err;
+      });
+
+      app.use(async function(ctx) {
+        ctx.respond = false;
+        ctx.response.status = 200;
+        ctx.session.makeChange = true;
+
+        ctx.response.flushHeaders();
+        ctx.res.end();
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect(200, err => {
+        done(err || appError);
+      });
+    });
+  });
+
+
   describe('ctx.session', () => {
     after(mm.restore);
 

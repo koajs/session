@@ -24,9 +24,7 @@ const _CONTEXT_SESSION = Symbol('context#_contextSession');
 module.exports = function(opts, app) {
   // session(app[, opts])
   if (opts && typeof opts.use === 'function') {
-    const tmp = app;
-    app = opts;
-    opts = tmp;
+    [ app, opts ] = [ opts, app ];
   }
   // app required
   if (!app || typeof app.use !== 'function') {

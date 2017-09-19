@@ -761,10 +761,10 @@ describe('Koa Session Cookie', () => {
     before(() => {
       app = App({ rolling: true });
 
-      app.use(function* () {
-        console.log(this.path);
-        if (this.path === '/set') this.session = { foo: 'bar' };
-        this.body = this.session;
+      app.use(async function(ctx) {
+        console.log(ctx.path);
+        if (ctx.path === '/set') ctx.session = { foo: 'bar' };
+        ctx.body = ctx.session;
       });
     });
 

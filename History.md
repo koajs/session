@@ -1,4 +1,12 @@
 
+5.5.1 / 2017-11-17
+==================
+
+**others**
+  * [[`b976b10`](http://github.com/koajs/session/commit/b976b10212f522b675711badb7ce1bc9a909d19d)] - perf: no need to assign opts (#103) (Yiyu He <<dead_horse@qq.com>>)
+  * [[`c040b59`](http://github.com/koajs/session/commit/c040b5997d35267a3a65becf91e327615ff17fa5)] - chore: fix example bug and use syntactic sugar (#97) (Runrioter Wung <<runrioter@gmail.com>>)
+  * [[`906277a`](http://github.com/koajs/session/commit/906277a3c9995ed4f07d2cee55e3020af0c75168)] - docs: copyediting (#85) (Nate Silva <<natesilva@users.noreply.github.com>>)
+
 5.5.0 / 2017-08-04
 ==================
 

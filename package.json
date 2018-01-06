@@ -26,7 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "crc": "^3.4.4",
-    "debug": "^2.2.0",
+    "debug": "^2.6.9",
     "is-type-of": "^1.0.0",
     "uid-safe": "^2.1.3"
   },

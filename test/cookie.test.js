@@ -348,7 +348,7 @@ describe('Koa Session Cookie', () => {
     });
 
     describe('.length', () => {
-      it('should return session length', done => {
+      it('should return session`s keys length', done => {
         const app = App();
 
         app.use(async function(ctx) {
@@ -462,6 +462,35 @@ describe('Koa Session Cookie', () => {
         request(app.listen())
         .get('/')
         .expect(500, done);
+      });
+    });
+
+    describe('contains multibyte character', () => {
+      it('should still work', done => {
+        const app = App();
+        const MULTIBYTE_CHAR = '€';
+
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.string = MULTIBYTE_CHAR;
+            ctx.status = 204;
+          } else {
+            ctx.body = ctx.session.string;
+          }
+        });
+
+        const server = app.listen();
+
+        request(server)
+            .post('/')
+            .expect(204, (err, res) => {
+              if (err) return done(err);
+              const cookie = res.headers['set-cookie'];
+              request(server)
+                  .get('/')
+                  .set('Cookie', cookie.join(';'))
+                  .expect(MULTIBYTE_CHAR, done);
+            });
       });
     });
   });

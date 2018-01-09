@@ -1,4 +1,10 @@
 
+5.6.0 / 2018-01-09
+==================
+
+**features**
+  * [[`f00c1ef`](http://github.com/koajs/session/commit/f00c1ef9857fec52e1aaf981ba9a8e837b3e7ffa)] - feat: emit events when session invalid (#108) (Yiyu He <<dead_horse@qq.com>>)
+
 5.5.1 / 2017-11-17
 ==================
 

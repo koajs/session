@@ -1,4 +1,10 @@
 
+4.7.0 / 2018-01-09
+==================
+
+**features**
+  * [[`f8b1822`](http://github.com/koajs/session/commit/f8b18228c90a6a0d7b8d91c560b9675bafd5a552)] - feat: emit event expose ctx (dead-horse <<dead_horse@qq.com>>)
+
 4.6.0 / 2018-01-09
 ==================
 

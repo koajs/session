@@ -6,6 +6,8 @@ const should = require('should');
 const mm = require('mm');
 const session = require('..');
 const store = require('./store');
+const pedding = require('pedding');
+const assert = require('assert');
 
 describe('Koa Session External Store', () => {
   let cookie;
@@ -442,8 +444,13 @@ describe('Koa Session External Store', () => {
 
     describe('and expired', () => {
       it('should expire the sess', done => {
+        done = pedding(done, 2);
         const app = App({ maxAge: 100 });
-
+        app.on('session:expired', args => {
+          assert(args.key.match(/^\d+-/));
+          assert(args.value);
+          done();
+        });
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
             ctx.session.message = 'hi';
@@ -535,10 +542,16 @@ describe('Koa Session External Store', () => {
 
   describe('when store return empty', () => {
     it('should create new Session', done => {
+      done = pedding(done, 2);
       const app = App({ signed: false });
 
       app.use(async function(ctx) {
         ctx.body = String(ctx.session.isNew);
+      });
+
+      app.on('session:missed', args => {
+        assert(args.key === 'invalid-key');
+        done();
       });
 
       request(app.listen())
@@ -551,6 +564,7 @@ describe('Koa Session External Store', () => {
 
   describe('when valid and beforeSave set', () => {
     it('should ignore session when uid changed', done => {
+      done = pedding(done, 2);
       const app = new Koa();
 
       app.keys = [ 'a', 'b' ];
@@ -572,6 +586,11 @@ describe('Koa Session External Store', () => {
           foo: ctx.session.foo,
           uid: ctx.cookies.get('uid'),
         };
+      });
+      app.on('session:invalid', args => {
+        assert(args.key);
+        assert(args.value);
+        done();
       });
 
       request(app.callback())

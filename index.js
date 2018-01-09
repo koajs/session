@@ -94,8 +94,8 @@ function formatOpts(opts) {
   }
 
   if (!opts.genid) {
-    if (opts.prefix) opts.genid = () => opts.prefix + uid.sync(24);
-    else opts.genid = () => uid.sync(24);
+    if (opts.prefix) opts.genid = () => `${opts.prefix}${Date.now()}-${uid.sync(24)}`;
+    else opts.genid = () => `${Date.now()}-${uid.sync(24)}`;
   }
 
   return opts;

@@ -26,7 +26,7 @@
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores. 
+ Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
 
  *Requires Node 7.6 or greater for async/await support*
 
@@ -111,11 +111,19 @@ console.log('listening on port 3000');
   Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid uisng session as a cache, keep the session lean, and store it in a cookie if possible!**
 
 
-  The way of generating external session id is controlled by the `options.genid`, which defaults to `uid.sync(24)`.
+  The way of generating external session id is controlled by the `options.genid`, which defaults to `Date.now() + '-' + uid.sync(24)`.
 
   If you want to add prefix for all external session id, you can use `options.prefix`, it will not work if `options.genid` present.
 
   If your session store requires data or utilities from context, `opts.ContextStore` is alse supported. `ContextStore` must be a class which claims three instance methods demonstrated above. `new ContextStore(ctx)` will be executed on every request.
+
+### Events
+
+`koa-session` will emit event on `app` when session expired or invalid:
+
+- `session:missed`: can't get session value from external store.
+- `session:invalid`: session value is invalid.
+- `session:expired`: session value is expired.
 
 ### Session#isNew
 

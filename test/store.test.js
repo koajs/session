@@ -459,6 +459,7 @@ describe('Koa Session External Store', () => {
         app.on('session:expired', args => {
           assert(args.key.match(/^\d+-/));
           assert(args.value);
+          assert(args.ctx);
           done();
         });
 
@@ -552,6 +553,7 @@ describe('Koa Session External Store', () => {
 
       app.on('session:missed', args => {
         assert(args.key === 'invalid-key');
+        assert(args.ctx);
         done();
       });
 
@@ -591,6 +593,7 @@ describe('Koa Session External Store', () => {
       app.on('session:invalid', args => {
         assert(args.key);
         assert(args.value);
+        assert(args.ctx);
         done();
       });
 

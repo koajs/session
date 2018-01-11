@@ -1,4 +1,10 @@
 
+4.7.1 / 2018-01-11
+==================
+
+**fixes**
+  * [[`5683102`](http://github.com/koajs/session/commit/5683102687c48ba11521d8b249126de13e7c0d8b)] - fix: emit event in next tick (dead-horse <<dead_horse@qq.com>>)
+
 4.7.0 / 2018-01-09
 ==================
 

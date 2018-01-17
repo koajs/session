@@ -719,7 +719,7 @@ describe('Koa Session External Store', () => {
     });
   });
 
-  describe.only('when renew set to true', () => {
+  describe('when renew set to true', () => {
     let app;
     before(() => {
       app = App({ renew: true, maxAge: 2000 });

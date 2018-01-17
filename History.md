@@ -1,4 +1,10 @@
 
+5.8.0 / 2018-01-17
+==================
+
+**features**
+  * [[`bb5f4bf`](http://github.com/koajs/session/commit/bb5f4bf86da802cb37cd5e3a990b5bbcc4f6d144)] - feat: support opts.renew (#111) (Yiyu He <<dead_horse@qq.com>>)
+
 5.7.1 / 2018-01-11
 ==================
 

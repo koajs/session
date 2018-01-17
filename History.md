@@ -1,4 +1,13 @@
 
+4.8.0 / 2018-01-17
+==================
+
+**features**
+  * [[`ca6b329`](http://github.com/koajs/session/commit/ca6b32906678b3cf6168c4afac250b2e68fd17c8)] - feat: support opts.renew (#111) (Yiyu He <<dead_horse@qq.com>>)
+
+**fixes**
+  * [[`5c2fc72`](http://github.com/koajs/session/commit/5c2fc72cab47450da2c9ae8fedba8657d0c264ee)] - fix: ensure store expired after cookie (dead-horse <<dead_horse@qq.com>>)
+
 4.7.1 / 2018-01-11
 ==================
 

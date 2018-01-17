@@ -19,7 +19,8 @@
     "istanbul": "0",
     "koa": "1",
     "mm": "^2.1.0",
-    "mocha": "3 ",
+    "mocha": "3",
+    "mz-modules": "^2.0.0",
     "should": "8",
     "supertest": "2"
   },

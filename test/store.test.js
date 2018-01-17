@@ -8,6 +8,7 @@ const session = require('..');
 const store = require('./store');
 const pedding = require('pedding');
 const assert = require('assert');
+const sleep = require('mz-modules/sleep');
 
 describe('Koa Session External Store', () => {
   let cookie;
@@ -716,6 +717,57 @@ describe('Koa Session External Store', () => {
         .set('Cookie', cookie.join(';'))
         .expect(';', done);
       });
+    });
+  });
+
+  describe('when renew set to true', () => {
+    let app;
+    before(() => {
+      app = App({ renew: true, maxAge: 2000 });
+
+      app.use(function* () {
+        if (this.path === '/set') this.session = { foo: 'bar' };
+        this.body = this.session;
+      });
+    });
+
+    it('should not send set-cookie when session not exists', () => {
+      return request(app.callback())
+      .get('/')
+      .expect({})
+      .expect(res => {
+        should.not.exist(res.headers['set-cookie']);
+      });
+    });
+
+    it('should send set-cookie when session near expire and not change', function* () {
+      let res = yield request(app.callback())
+      .get('/set')
+      .expect({ foo: 'bar' });
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      yield sleep(1200);
+      res = yield request(app.callback())
+      .get('/')
+      .set('cookie', cookie)
+      .expect({ foo: 'bar' });
+      res.headers['set-cookie'].should.have.length(2);
+    });
+
+    it('should not send set-cookie when session not near expire and not change', function* () {
+      let res = yield request(app.callback())
+      .get('/set')
+      .expect({ foo: 'bar' });
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      yield sleep(500);
+      res = yield request(app.callback())
+      .get('/')
+      .set('cookie', cookie)
+      .expect({ foo: 'bar' });
+      should.not.exist(res.headers['set-cookie']);
     });
   });
 });

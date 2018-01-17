@@ -1,4 +1,10 @@
 
+5.8.1 / 2018-01-17
+==================
+
+**fixes**
+  * [[`bdb4fd4`](http://github.com/koajs/session/commit/bdb4fd45a7c247c94f0035585104b004e36ec725)] - fix: ensure store expired after cookie (dead-horse <<dead_horse@qq.com>>)
+
 5.8.0 / 2018-01-17
 ==================
 

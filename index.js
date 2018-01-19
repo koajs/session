@@ -2,7 +2,6 @@
 
 const debug = require('debug')('koa-session');
 const ContextSession = require('./lib/context');
-const util = require('./lib/util');
 const assert = require('assert');
 const uid = require('uid-safe');
 const is = require('is-type-of');
@@ -69,14 +68,6 @@ function formatOpts(opts) {
   if (opts.signed == null) opts.signed = true;
 
   debug('session options %j', opts);
-
-  // setup encoding/decoding
-  if (typeof opts.encode !== 'function') {
-    opts.encode = util.encode;
-  }
-  if (typeof opts.decode !== 'function') {
-    opts.decode = util.decode;
-  }
 
   const store = opts.store;
   if (store) {

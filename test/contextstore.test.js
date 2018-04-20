@@ -384,6 +384,49 @@ describe('Koa Session External Context Store', () => {
           .expect('hi', done);
         });
       });
+      it('should not expire the session after multiple session changes', done => {
+        const app = App({ maxAge: 'session' });
+
+        app.use(async function(ctx) {
+          ctx.session.count = (ctx.session.count || 0) + 1;
+          ctx.body = `hi ${ctx.session.count}`;
+        });
+        const server = app.listen();
+
+        request(server)
+        .get('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .expect('hi 1')
+        .end((err, res) => {
+          if (err) return done(err);
+          let cookie = res.headers['set-cookie'].join(';');
+          cookie.should.not.containEql('expires=');
+
+          request(server)
+          .get('/')
+          .set('cookie', cookie)
+          .expect('Set-Cookie', /koa:sess/)
+          .expect('hi 2')
+          .end((err, res) => {
+            if (err) return done(err);
+            cookie = res.headers['set-cookie'].join(';');
+            cookie.should.not.containEql('expires=');
+
+            request(server)
+            .get('/')
+            .set('cookie', cookie)
+            .expect('Set-Cookie', /koa:sess/)
+            .expect('hi 3')
+            .end((err, res) => {
+              if (err) return done(err);
+              cookie = res.headers['set-cookie'].join(';');
+              cookie.should.not.containEql('expires=');
+
+              done();
+            });
+          });
+        });
+      });
       it('should use the default maxAge when improper string given', done => {
         const app = App({ maxAge: 'not the right string' });
 

@@ -61,7 +61,10 @@ function formatOpts(opts) {
   opts.key = opts.key || 'koa:sess';
 
   // back-compat maxage
-  if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
+  if ('maxAge' in opts) {
+    const validMaxAge = opts.maxAge === 'session' || typeof opts.maxAge === 'number';
+    if (!validMaxAge) throw new TypeError('opts.maxAge must be a number or string `session`');
+  } else opts.maxAge = opts.maxage;
 
   // defaults
   if (opts.overwrite == null) opts.overwrite = true;

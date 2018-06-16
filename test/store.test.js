@@ -386,31 +386,10 @@ describe('Koa Session External Store', () => {
           .expect('hi', done);
         });
       });
-      it('should use the default maxAge when improper string given', done => {
-        const app = App({ maxAge: 'not the right string' });
-
-        app.use(async function(ctx) {
-          if (ctx.method === 'POST') {
-            ctx.session.message = 'hi';
-            ctx.body = 200;
-            return;
-          }
-          ctx.body = ctx.session.message;
-        });
-        const server = app.listen();
-
-        request(server)
-        .post('/')
-        .expect('Set-Cookie', /koa:sess/)
-        .end((err, res) => {
-          if (err) return done(err);
-          const cookie = res.headers['set-cookie'].join(';');
-          cookie.should.containEql('expires=');
-          request(server)
-          .get('/')
-          .set('cookie', cookie)
-          .expect('hi', done);
-        });
+      it('should throw error for invalid maxAge', () => {
+        (function() {
+          App({ maxAge: 'not the right string' });
+        }).should.throw('opts.maxAge must be a number or string `session`');
       });
     });
     describe('and not expire', () => {

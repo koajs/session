@@ -109,7 +109,7 @@ console.log('listening on port 3000');
   - `destroy(key)`: destroy session for key
 
 
-  Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid uisng session as a cache, keep the session lean, and store it in a cookie if possible!**
+  Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid using session as a cache, keep the session lean, and store it in a cookie if possible!**
 
 
   The way of generating external session id is controlled by the `options.genid`, which defaults to `Date.now() + '-' + uid.sync(24)`.

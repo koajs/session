@@ -116,7 +116,7 @@ console.log('listening on port 3000');
 
   If you want to add prefix for all external session id, you can use `options.prefix`, it will not work if `options.genid` present.
 
-  If your session store requires data or utilities from context, `opts.ContextStore` is alse supported. `ContextStore` must be a class which claims three instance methods demonstrated above. `new ContextStore(ctx)` will be executed on every request.
+  If your session store requires data or utilities from context, `opts.ContextStore` is also supported. `ContextStore` must be a class which claims three instance methods demonstrated above. `new ContextStore(ctx)` will be executed on every request.
 
 ### Events
 

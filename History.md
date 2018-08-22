@@ -1,4 +1,13 @@
 
+5.8.3 / 2018-08-22
+==================
+
+**fixes**
+  * [[`6f1a41c`](http://github.com/koajs/session/commit/6f1a41cf499f55532f0e7ce0de04d778a0466496)] - fix: session not works (#136) (吖猩 <<whxaxes@qq.com>>)
+
+**others**
+  * [[`95272ff`](http://github.com/koajs/session/commit/95272ff912af8dd31ae9f038df9540d8b6c019d7)] - fix typo in README.md (#134) (Maples7 <<maples7@163.com>>)
+
 5.8.2 / 2018-07-12
 ==================
 

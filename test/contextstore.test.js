@@ -356,6 +356,54 @@ describe('Koa Session External Context Store', () => {
     });
   });
 
+  describe('when autoCommit is present', () => {
+    describe('and set to false', () => {
+      it('should not set headers if manuallyCommit() isn\'t called', done => {
+        const app = App({ autoCommit: false });
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
+            return;
+          }
+          ctx.body = ctx.session.message;
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .end((err, res) => {
+          if (err) return done(err);
+          const cookie = res.headers['set-cookie'];
+          should.not.exist(cookie);
+        })
+        .expect(200, done);
+      });
+      it('should set headers if manuallyCommit() is called', done => {
+        const app = App({ autoCommit: false });
+        app.use(async function(ctx, next) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'dummy';
+          }
+          await next();
+        });
+        app.use(async function(ctx) {
+          ctx.body = 200;
+          await ctx.session.manuallyCommit();
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .end(err => {
+          if (err) return done(err);
+        })
+        .expect(200, done);
+      });
+    });
+  });
+
   describe('when maxAge present', () => {
     describe('and set to be a session cookie', () => {
       it('should not expire the session', done => {

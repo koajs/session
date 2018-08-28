@@ -53,6 +53,7 @@ const CONFIG = {
   /** 'session' will result in a cookie that expires when session/browser is closed */
   /** Warning: If a session cookie is stolen, this cookie will never expire */
   maxAge: 86400000,
+  autoCommit: true, /** (boolean) automatically commit headers (default true) */
   overwrite: true, /** (boolean) can overwrite or not (default true) */
   httpOnly: true, /** (boolean) httpOnly or not (default true) */
   signed: true, /** (boolean) signed or not (default true) */
@@ -149,6 +150,10 @@ if (this.session.isNew) {
 ### Session#save()
 
   Save this session no matter whether it is populated.
+
+### Session#manuallyCommit()
+
+  Session headers are auto committed by default. Use this if `autoCommit` is set to `false`.
 
 ### Destroying a session
 

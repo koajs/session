@@ -1,4 +1,10 @@
 
+5.9.0 / 2018-08-28
+==================
+
+**features**
+  * [[`7241400`](http://github.com/koajs/session/commit/724140076b65867b1a0cffee4f061971be8751c0)] - feat: Add autoCommit option (#139) (Jonas Galvez <<jonasgalvez@gmail.com>>)
+
 5.8.3 / 2018-08-22
 ==================
 

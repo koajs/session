@@ -151,6 +151,10 @@ if (this.session.isNew) {
 
   Save this session no matter whether it is populated.
 
+### Session#commitNow()
+
+  Session headers are auto committed by default. Use this if `autoCommit` is set to `false`.
+
 ### Destroying a session
 
   To destroy a session simply set it to `null`:

@@ -122,13 +122,7 @@ function extendContext(context, opts) {
     },
     session: {
       get() {
-        const session = this[CONTEXT_SESSION].get();
-        session.manuallyCommit = async function() {
-          if (!opts.autoCommit) {
-            await this[CONTEXT_SESSION].commit();
-          }
-        }
-        return session
+        return this[CONTEXT_SESSION].get();
       },
       set(val) {
         this[CONTEXT_SESSION].set(val);

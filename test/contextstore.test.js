@@ -379,8 +379,6 @@ describe('Koa Session External Context Store', () => {
         })
         .expect(200, done);
       });
-    });
-    describe('and set to false', () => {
       it('should set headers if manuallyCommit() is called', done => {
         const app = App({ autoCommit: false });
         app.use(async function(ctx, next) {

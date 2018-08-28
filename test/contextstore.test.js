@@ -386,7 +386,7 @@ describe('Koa Session External Context Store', () => {
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
             ctx.session.message = 'hi';
-            ctx.session.commitNow();
+            await ctx.session.commitNow();
             ctx.body = 200;
             return;
           }
@@ -396,7 +396,6 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
         .expect('hi')
         .end(err => {
           if (err) return done(err);

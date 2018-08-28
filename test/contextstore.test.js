@@ -385,18 +385,19 @@ describe('Koa Session External Context Store', () => {
         const app = App({ autoCommit: false });
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
-            ctx.session.message = 'hi';
+            ctx.session.message = 'dummy';
             ctx.body = 200;
-            await ctx.session.commitNow();
             return;
           }
-          ctx.body = ctx.session.message;
+        });
+        app.use(async function(ctx) {
+          await ctx.session.commitNow();
         });
         const server = app.listen();
 
         request(server)
         .post('/')
-        .expect('hi')
+        .expect('200')
         .end(err => {
           if (err) return done(err);
         })

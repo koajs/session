@@ -151,7 +151,7 @@ if (this.session.isNew) {
 
   Save this session no matter whether it is populated.
 
-### Session#commitNow()
+### Session#manuallyCommit()
 
   Session headers are auto committed by default. Use this if `autoCommit` is set to `false`.
 

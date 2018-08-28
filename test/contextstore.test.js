@@ -389,6 +389,7 @@ describe('Koa Session External Context Store', () => {
         });
         app.use(async function(ctx) {
           ctx.body = 200;
+          await ctx.session.manuallyCommit();
         });
         const server = app.listen();
 

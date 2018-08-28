@@ -42,7 +42,9 @@ module.exports = function(opts, app) {
     } catch (err) {
       throw err;
     } finally {
-      await sess.commit();
+      if (opts.autoCommit) {
+        await sess.commit();
+      }
     }
   };
 };

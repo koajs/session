@@ -42,7 +42,9 @@ module.exports = function(opts, app) {
     } catch (err) {
       throw err;
     } finally {
-      await sess.commit();
+      if (opts.autoCommit) {
+        await sess.commit();
+      }
     }
   };
 };
@@ -67,6 +69,7 @@ function formatOpts(opts) {
   if (opts.overwrite == null) opts.overwrite = true;
   if (opts.httpOnly == null) opts.httpOnly = true;
   if (opts.signed == null) opts.signed = true;
+  if (opts.autoCommit == null) opts.autoCommit = true;
 
   debug('session options %j', opts);
 
@@ -120,6 +123,11 @@ function extendContext(context, opts) {
       },
     },
     session: {
+      manuallyCommit() {
+        if (!opts.autoCommit) {
+          return this[CONTEXT_SESSION].commit();
+        }
+      },
       get() {
         return this[CONTEXT_SESSION].get();
       },

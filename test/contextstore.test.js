@@ -356,27 +356,52 @@ describe('Koa Session External Context Store', () => {
     });
   });
 
-  describe('when autoCommit is present and set to false', () => {
-    it('should not set headers if commit() isn\'t called', done => {
-      const app = App({ autoCommit: false });
-      app.use(async function(ctx) {
-        if (ctx.method === 'POST') {
-          ctx.session.message = 'hi';
-          ctx.body = 200;
-          return;
-        }
-        ctx.body = ctx.session.message;
-      });
-      const server = app.listen();
+  describe('when autoCommit is present', () => {
+    describe('and set to false', () => {
+      it('should not set headers if commitNow() isn\'t called', done => {
+        const app = App({ autoCommit: false });
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
+            return;
+          }
+          ctx.body = ctx.session.message;
+        });
+        const server = app.listen();
 
-      request(server)
-      .post('/')
-      .end((err, res) => {
-        if (err) return done(err);
-        const cookie = res.headers['set-cookie'];
-        should.not.exists(cookie);
-      })
-      .expect(200, done);
+        request(server)
+        .post('/')
+        .end((err, res) => {
+          if (err) return done(err);
+          const cookie = res.headers['set-cookie'];
+          should.not.exists(cookie);
+        })
+        .expect(200, done);
+      });
+    });
+    describe('and set to false', () => {
+      it('should set headers if commitNow() is called', done => {
+        const app = App({ autoCommit: false });
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
+            return;
+          }
+          ctx.body = ctx.session.message;
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('hi')
+        .end((err, res) => {
+          if (err) return done(err);
+        })
+        .expect(200, done);
+      });
     });
   });
 

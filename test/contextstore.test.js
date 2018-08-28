@@ -375,7 +375,7 @@ describe('Koa Session External Context Store', () => {
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'];
-          should.not.exists(cookie);
+          should.not.exist(cookie);
         })
         .expect(200, done);
       });
@@ -383,13 +383,15 @@ describe('Koa Session External Context Store', () => {
     describe('and set to false', () => {
       it('should set headers if manuallyCommit() is called', done => {
         const app = App({ autoCommit: false });
-        app.use(async function(ctx) {
+        app.use(async function(ctx, next) {
           if (ctx.method === 'POST') {
             ctx.session.message = 'dummy';
-            ctx.body = 200;
           }
+          await next();
         });
         app.use(async function(ctx) {
+          ctx.body = 200;
+          // eslint-disable-next-line
           await ctx.session.manuallyCommit();
         });
         const server = app.listen();

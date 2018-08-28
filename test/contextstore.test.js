@@ -386,6 +386,7 @@ describe('Koa Session External Context Store', () => {
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
             ctx.session.message = 'hi';
+            ctx.session.commitNow()
             ctx.body = 200;
             return;
           }

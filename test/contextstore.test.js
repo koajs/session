@@ -397,7 +397,7 @@ describe('Koa Session External Context Store', () => {
         .post('/')
         .expect('Set-Cookie', /koa:sess=.+;/)
         .expect('hi')
-        .end((err, res) => {
+        .end(err => {
           if (err) return done(err);
         })
         .expect(200, done);

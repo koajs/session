@@ -358,7 +358,7 @@ describe('Koa Session External Context Store', () => {
 
   describe('when autoCommit is present', () => {
     describe('and set to false', () => {
-      it('should not set headers if commitNow() isn\'t called', done => {
+      it('should not set headers if manuallyCommit() isn\'t called', done => {
         const app = App({ autoCommit: false });
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
@@ -381,7 +381,7 @@ describe('Koa Session External Context Store', () => {
       });
     });
     describe('and set to false', () => {
-      it('should set headers if commitNow() is called', done => {
+      it('should set headers if manuallyCommit() is called', done => {
         const app = App({ autoCommit: false });
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {

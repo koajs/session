@@ -124,7 +124,7 @@ function extendContext(context, opts) {
     },
     session: {
       commitNow() {
-        this[CONTEXT_SESSION].commit();
+        return this[CONTEXT_SESSION].commit();
       },
       get() {
         return this[CONTEXT_SESSION].get();

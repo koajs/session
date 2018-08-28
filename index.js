@@ -123,7 +123,7 @@ function extendContext(context, opts) {
       },
     },
     session: {
-      commit() {
+      commitNow() {
         this[CONTEXT_SESSION].commit();
       },
       get() {

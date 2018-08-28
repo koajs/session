@@ -391,8 +391,6 @@ describe('Koa Session External Context Store', () => {
         });
         app.use(async function(ctx) {
           ctx.body = 200;
-          // eslint-disable-next-line
-          await ctx.session.manuallyCommit();
         });
         const server = app.listen();
 

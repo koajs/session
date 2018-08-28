@@ -42,9 +42,7 @@ module.exports = function(opts, app) {
     } catch (err) {
       throw err;
     } finally {
-      if (opts.autoCommit) {
-        await sess.commit();
-      }
+      await sess.commit();
     }
   };
 };
@@ -126,7 +124,7 @@ function extendContext(context, opts) {
       get() {
         const session = this[CONTEXT_SESSION].get();
         session.manuallyCommit = async function() {
-          if (opts.manuallyCommit) {
+          if (!opts.autoCommit) {
             await this[CONTEXT_SESSION].commit();
           }
         }

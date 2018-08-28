@@ -36,7 +36,7 @@
     "node": ">=7.6"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --require should --reporter spec test/*.test.js",
+    "test": "npm run lint && NODE_ENV=test mocha --require should --reporter spec test/*.test.js",
     "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should test/*.test.js",
     "test-travis": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should test/*.test.js",
     "lint": "eslint lib test index.js"

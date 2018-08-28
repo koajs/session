@@ -123,7 +123,7 @@ function extendContext(context, opts) {
       },
     },
     session: {
-      commitNow() {
+      manuallyCommit() {
         if (!opts.autoCommit) {
           return this[CONTEXT_SESSION].commit();
         }

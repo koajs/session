@@ -12,7 +12,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "^1.6.2",
+    "koa": "^0.21.1",
     "mocha": "^3.5.3",
     "should": "^11.2.1",
     "supertest": "^2.0.1"

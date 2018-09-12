@@ -12,14 +12,14 @@
     "index.js"
   ],
   "devDependencies": {
-    "koa": "*",
-    "mocha": "*",
-    "should": "*",
-    "supertest": "*"
+    "koa": "^1.6.2",
+    "mocha": "^3.5.3",
+    "should": "^11.2.1",
+    "supertest": "^2.0.1"
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "^3.2.5"
+    "debug": "^2.6.9"
   },
   "scripts": {
     "test": "make test"

@@ -1,4 +1,10 @@
 
+5.10.0 / 2018-10-29
+==================
+
+**features**
+  * [[`81906f7`](http://github.com/koajs/session/commit/81906f7724ef009dc14686f4990af35c716f6db9)] - feat: support options.externalKey #88 (#149) (Tree Xie <<vicansocanbico@gmail.com>>)
+
 5.9.0 / 2018-08-28
 ==================
 

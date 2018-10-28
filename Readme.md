@@ -127,6 +127,13 @@ console.log('listening on port 3000');
 - `session:invalid`: session value is invalid.
 - `session:expired`: session value is expired.
 
+### Custom External Key 
+
+External key is used the cookie by default, but you can use `options.externalKey` to customize your own external key methods. `options.externalKey` with two methods:
+
+- `get(ctx)`: get the external key
+- `set(ctx, value)`: set the external key
+
 ### Session#isNew
 
   Returns __true__ if the session is new.

@@ -88,6 +88,12 @@ function formatOpts(opts) {
     assert(is.function(store.destroy), 'store.destroy must be function');
   }
 
+  const externalKey = opts.externalKey;
+  if (externalKey) {
+    assert(is.function(externalKey.get), 'externalKey.get must be function');
+    assert(is.function(externalKey.set), 'externalKey.set must be function');
+  }
+
   const ContextStore = opts.ContextStore;
   if (ContextStore) {
     assert(is.class(ContextStore), 'ContextStore must be a class');

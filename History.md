@@ -1,4 +1,13 @@
 
+5.10.1 / 2018-12-18
+==================
+
+**features**
+  * [[`5f12f70`](http://github.com/koajs/session/commit/5f12f7019b4fbb3ce1d495c1c7fb8a234ae16818)] - feat: allow init multi session middleware (#159) (killa <<killa123@126.com>>)
+
+**fixes**
+  * [[`89c048a`](http://github.com/koajs/session/commit/89c048adc5a64b6c12c87047b766ac34be10af77)] - fix: moved "pedding" package to dev dependencies (#155) (Vitaliy Zaytsev <<teh.kroleg@gmail.com>>)
+
 5.10.0 / 2018-10-29
 ==================
 

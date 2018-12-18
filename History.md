@@ -1,4 +1,10 @@
 
+4.8.1 / 2018-12-18
+==================
+
+**features**
+  * [[`d792770`](http://github.com/koajs/session/commit/d7927708848a0e39a0652643ed3b6426ceb4952c)] - feat: allow init multi session middleware (#160) (killa <<killa123@126.com>>)
+
 4.8.0 / 2018-01-17
 ==================
 

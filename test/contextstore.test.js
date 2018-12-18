@@ -700,7 +700,7 @@ describe('Koa Session External Context Store', () => {
   describe('ctx.session', () => {
     after(mm.restore);
 
-    it('should be mocked', done => {
+    it('can be mocked', done => {
       const app = App();
 
       app.use(async function(ctx) {

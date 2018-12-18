@@ -120,6 +120,9 @@ function formatOpts(opts) {
  */
 
 function extendContext(context, opts) {
+  if (context.hasOwnProperty(CONTEXT_SESSION)) {
+    return;
+  }
   Object.defineProperties(context, {
     [CONTEXT_SESSION]: {
       get() {

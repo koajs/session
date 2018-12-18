@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('assert');
 const koa = require('koa');
 const request = require('supertest');
 const should = require('should');
@@ -793,6 +794,18 @@ describe('Koa Session Cookie', () => {
         })
         .expect({ foo: 'bar' }, done);
       });
+    });
+  });
+
+  describe('init multi session middleware', () => {
+    it('should work', () => {
+      const app = new koa();
+
+      app.keys = [ 'a', 'b' ];
+      const s1 = session({}, app);
+      const s2 = session({}, app);
+      assert(s1);
+      assert(s2);
     });
   });
 });

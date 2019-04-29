@@ -448,7 +448,7 @@ describe('Koa Session External Store', () => {
         done = pedding(done, 2);
         const app = App({ maxAge: 100 });
         app.on('session:expired', args => {
-          assert(args.key.match(/^\d+-/));
+          assert(args.key.match(/^\w+-/));
           assert(args.value);
           assert(args.ctx);
           done();

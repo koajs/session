@@ -1,4 +1,17 @@
 
+5.11.0 / 2019-04-29
+==================
+
+**features**
+  * [[`b79134d`](http://github.com/koajs/session/commit/b79134d6854173bf46d6703e79636a58f9282e15)] - feat: make sure session id is global unique (#170) (fengmk2 <<fengmk2@gmail.com>>)
+
+**fixes**
+  * [[`c2b4259`](http://github.com/koajs/session/commit/c2b4259ccef6095cad2f3ff51968b21cea993d13)] - fix: remove package-lock.json (fengmk2 <<fengmk2@gmail.com>>)
+
+**others**
+  * [[`23ad871`](http://github.com/koajs/session/commit/23ad8718a9a392c0c563893a10b5ca9f6fd70ebe)] - deps: Fix security vulnerabilities from npm audit (#163) (Douglas Wade <<douglas.b.wade@gmail.com>>)
+  * [[`1600aab`](http://github.com/koajs/session/commit/1600aabdfa6a86973e3fab9f4064c3ed82b10604)] - test: changed "ctx.session is mockable" tests names to more appropriate (#158) (Vitaliy Zaytsev <<teh.kroleg@gmail.com>>)
+
 5.10.1 / 2018-12-18
 ==================
 

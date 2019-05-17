@@ -1,4 +1,13 @@
 
+5.12.0 / 2019-05-17
+==================
+
+**features**
+  * [[`39ca830`](http://github.com/koajs/session/commit/39ca830a99ae7fcab2bd499a1f2a87de53fd1944)] - feat: add the parameter "ctx" to the function "genid" so can get the … (#173) (松松 <<1733458402@qq.com>>)
+
+**others**
+  * [[`3d57a44`](http://github.com/koajs/session/commit/3d57a443c7e0050d4066c871bf8da2656cda99f1)] - docs: add genid(ctx) in readme (dead-horse <<dead_horse@qq.com>>)
+
 5.11.0 / 2019-04-29
 ==================
 

@@ -96,6 +96,26 @@ describe('Koa Session External Context Store', () => {
         });
       });
 
+      it('should pass sid to middleware', done => {
+        const app = App();
+
+        app.use(async function(ctx) {
+          ctx.session.message = 'hello';
+          ctx.state.sid.indexOf('_suffix').should.greaterThan(1);
+          ctx.body = '';
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess/)
+        .expect(200, (err, res) => {
+          if (err) return done(err);
+          cookie = res.header['set-cookie'].join(';');
+          cookie.indexOf('_suffix').should.greaterThan(1);
+          done();
+        });
+      });
+
       it('should not Set-Cookie', done => {
         const app = App();
 
@@ -726,8 +746,10 @@ function App(options) {
   app.keys = [ 'a', 'b' ];
   options = options || {};
   options.ContextStore = ContextStore;
-  options.genid = () => {
-    return Date.now() + '_suffix';
+  options.genid = ctx => {
+    const sid = Date.now() + '_suffix';
+    ctx.state.sid = sid;
+    return sid;
   };
   app.use(session(options, app));
   return app;

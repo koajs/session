@@ -769,6 +769,42 @@ describe('Koa Session External Store', () => {
       should.not.exist(res.headers['set-cookie']);
     });
   });
+
+  describe('when get session before middleware', () => {
+    it('should return empty session', async () => {
+      const app = new Koa();
+      app.keys = [ 'a', 'b' ];
+      const options = {};
+      options.store = store;
+      app.use(async (ctx, next) => {
+        // will not take effect
+        ctx.session.should.be.ok();
+        ctx.session.foo = '123';
+        await next();
+      });
+      app.use(session(options, app));
+      app.use(async ctx => {
+        if (ctx.path === '/set') ctx.session = { foo: 'bar' };
+        ctx.body = ctx.session;
+      });
+
+      let res = await request(app.callback())
+        .get('/')
+        .expect({});
+
+      res = await request(app.callback())
+        .get('/set')
+        .expect({ foo: 'bar' });
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      await sleep(1200);
+      res = await request(app.callback())
+        .get('/')
+        .set('cookie', cookie)
+        .expect({ foo: 'bar' });
+    });
+  });
 });
 
 function App(options) {

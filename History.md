@@ -1,4 +1,10 @@
 
+5.12.1 / 2019-07-10
+==================
+
+**fixes**
+  * [[`77968e3`](http://github.com/koajs/session/commit/77968e3ff6fb5d4f4a36665474ccd992fed689ec)] - fix: ensure ctx.session always has value (dead-horse <<dead_horse@qq.com>>)
+
 5.12.0 / 2019-05-17
 ==================
 

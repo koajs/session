@@ -1,4 +1,10 @@
 
+5.12.2 / 2019-07-10
+==================
+
+**fixes**
+  * [[`c23bab4`](http://github.com/koajs/session/commit/c23bab4023b95c65be46b4eeaf089608ddaa738e)] - fix: remvoe unused code (dead-horse <<dead_horse@qq.com>>)
+
 5.12.1 / 2019-07-10
 ==================
 

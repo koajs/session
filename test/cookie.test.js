@@ -249,6 +249,47 @@ describe('Koa Session Cookie', () => {
     });
   });
 
+  describe('after session set to null with signed cookie', () => {
+    it('should return expired cookies', done => {
+      const app = App({
+        signed: true,
+      });
+
+      app.use(async function(ctx) {
+        ctx.session.hello = {};
+        ctx.session = null;
+        ctx.body = String(ctx.session === null);
+      });
+
+      request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=; path=\/; expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+        .expect('Set-Cookie', /koa:sess.sig=(.*); path=\/; expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+        .expect('true')
+        .expect(200, done);
+    });
+  });
+
+  describe('after session set to null without signed cookie', () => {
+    it('should return expired cookies', done => {
+      const app = App({
+        signed: false,
+      });
+
+      app.use(async function(ctx) {
+        ctx.session.hello = {};
+        ctx.session = null;
+        ctx.body = String(ctx.session === null);
+      });
+
+      request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa:sess=; path=\/; expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+        .expect('true')
+        .expect(200, done);
+    });
+  });
+
   describe('when get session after set to null', () => {
     it('should return null', done => {
       const app = App();

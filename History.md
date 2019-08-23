@@ -1,4 +1,10 @@
 
+5.12.3 / 2019-08-23
+==================
+
+**fixes**
+  * [[`909d93f`](http://github.com/koajs/session/commit/909d93fc6b74c6e29b0e83f555f1fc4002a6a108)] - fix: correctly expire cookies for nullified sessions (Justin <<jmitchell38488@users.noreply.github.com>>)
+
 5.12.2 / 2019-07-10
 ==================
 

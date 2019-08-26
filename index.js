@@ -6,9 +6,20 @@ const util = require('./lib/util');
 const assert = require('assert');
 const uuid = require('uuid/v4');
 const is = require('is-type-of');
+const encrypt = require('./lib/encrypt');
 
 const CONTEXT_SESSION = Symbol('context#contextSession');
 const _CONTEXT_SESSION = Symbol('context#_contextSession');
+
+const defaults = {
+  key: 'koa:sess',
+  overwrite: true,
+  httpOnly: true,
+  signed: true,
+  autoCommit: true,
+  maxAge: null,
+  useCrypt: false,
+};
 
 /**
  * Initialize session middleware with `opts`:
@@ -58,27 +69,29 @@ module.exports = function(opts, app) {
  */
 
 function formatOpts(opts) {
-  opts = opts || {};
+  opts = Object.assign({}, defaults, opts || {});
+
   // key
-  opts.key = opts.key || 'koa:sess';
+  opts.key = opts.key || defaults.key;
 
   // back-compat maxage
   if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
 
   // defaults
-  if (opts.overwrite == null) opts.overwrite = true;
-  if (opts.httpOnly == null) opts.httpOnly = true;
-  if (opts.signed == null) opts.signed = true;
-  if (opts.autoCommit == null) opts.autoCommit = true;
+  if (opts.overwrite == null) opts.overwrite = defaults.overwrite;
+  if (opts.httpOnly == null) opts.httpOnly = defaults.httpOnly;
+  if (opts.signed == null) opts.signed = defaults.signed;
+  if (opts.autoCommit == null) opts.autoCommit = defaults.autoCommit;
+  if (opts.useCrypt == null) opts.useCrypt = defaults.useCrypt;
 
   debug('session options %j', opts);
 
   // setup encoding/decoding
   if (typeof opts.encode !== 'function') {
-    opts.encode = util.encode;
+    opts.encode = opts.useCrypt ? encrypt.encryptData : util.encode;
   }
   if (typeof opts.decode !== 'function') {
-    opts.decode = util.decode;
+    opts.decode = opts.useCrypt ? encrypt.decryptData : util.decode;
   }
 
   const store = opts.store;

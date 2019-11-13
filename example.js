@@ -1,9 +1,10 @@
 
 var session = require('./');
 var Koa = require('koa');
+var Keygrip = require('keygrip');
 var app = new Koa();
 
-app.keys = ['some secret hurr'];
+app.keys = new Keygrip(['insert 64 bytes random string', 'insert another 64 bytes random string'], 'sha512');
 
 app.use(session(app));
 

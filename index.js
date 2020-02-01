@@ -68,7 +68,8 @@ function formatOpts(opts) {
   // defaults
   if (opts.overwrite == null) opts.overwrite = true;
   if (opts.httpOnly == null) opts.httpOnly = true;
-  if (opts.sameSite == null) opts.sameSite = '';
+  // delete null sameSite config
+  if (opts.sameSite == null) delete opts.sameSite;
   if (opts.signed == null) opts.signed = true;
   if (opts.autoCommit == null) opts.autoCommit = true;
 

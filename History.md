@@ -1,4 +1,10 @@
 
+5.13.0 / 2020-02-01
+==================
+
+**features**
+  * [[`cb09a09`](http://github.com/koajs/session/commit/cb09a09cfa4767610d7cc7282a0de2a3a651c6ae)] - feat: support session cookie sameSite options (#193) (fengmk2 <<fengmk2@gmail.com>>)
+
 5.12.3 / 2019-08-23
 ==================
 

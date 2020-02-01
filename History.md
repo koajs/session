@@ -1,4 +1,10 @@
 
+5.13.1 / 2020-02-01
+==================
+
+**fixes**
+  * [[`ecd1f5e`](http://github.com/koajs/session/commit/ecd1f5edaa6ff1e77cc461d1107432b394ce21d2)] - fix: don't set any value to sameSite by default (#194) (fengmk2 <<fengmk2@gmail.com>>)
+
 5.13.0 / 2020-02-01
 ==================
 

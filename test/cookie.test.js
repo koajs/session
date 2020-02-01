@@ -94,6 +94,8 @@ describe('Koa Session Cookie', () => {
       .expect(204, (err, res) => {
         if (err) return done(err);
         const cookie = res.headers['set-cookie'];
+        // samesite is not set
+        assert(!cookie.join(';').includes('samesite'));
         request(server)
         .get('/')
         .set('Cookie', cookie.join(';'))
@@ -244,6 +246,11 @@ describe('Koa Session Cookie', () => {
         .get('/')
         .set('Cookie', cookie)
         .expect('Set-Cookie', /koa:sess/)
+        .expect(res => {
+          const cookie = res.headers['set-cookie'];
+          // samesite is not set
+          assert(!cookie.join(';').includes('samesite'));
+        })
         .expect(200, done);
       });
     });
@@ -691,6 +698,44 @@ describe('Koa Session Cookie', () => {
         .set('Cookie', cookies)
         .expect(200, done);
       });
+    });
+  });
+
+  describe('options.sameSite', () => {
+    it('should return opt.sameSite=none', done => {
+      const app = App({ sameSite: 'none' });
+
+      app.use(async function(ctx) {
+        ctx.session = { foo: 'bar' };
+        ctx.body = ctx.session.foo;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect(res => {
+        const cookie = res.headers['set-cookie'].join('|');
+        assert(cookie.includes('path=/; samesite=none; httponly'));
+      })
+      .expect('bar')
+      .expect(200, done);
+    });
+
+    it('should return opt.sameSite=lax', done => {
+      const app = App({ sameSite: 'lax' });
+
+      app.use(async function(ctx) {
+        ctx.session = { foo: 'bar' };
+        ctx.body = ctx.session.foo;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect(res => {
+        const cookie = res.headers['set-cookie'].join('|');
+        assert(cookie.includes('path=/; samesite=lax; httponly'));
+      })
+      .expect('bar')
+      .expect(200, done);
     });
   });
 

@@ -48,7 +48,7 @@ const app = new Koa();
 app.keys = ['some secret hurr'];
 
 const CONFIG = {
-  key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
+  key: 'koa.sess', /** (string) cookie key (default is koa.sess) */
   /** (number || 'session') maxAge in ms (default is 1 days) */
   /** 'session' will result in a cookie that expires when session/browser is closed */
   /** Warning: If a session cookie is stolen, this cookie will never expire */
@@ -84,7 +84,7 @@ console.log('listening on port 3000');
 ### Options
 
   The cookie name is controlled by the `key` option, which defaults
-  to "koa:sess". All other options are passed to `ctx.cookies.get()` and
+  to "koa.sess". All other options are passed to `ctx.cookies.get()` and
   `ctx.cookies.set()` allowing you to control security, domain, path,
   and signing among other settings.
 

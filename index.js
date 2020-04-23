@@ -13,7 +13,7 @@ const _CONTEXT_SESSION = Symbol('context#_contextSession');
 /**
  * Initialize session middleware with `opts`:
  *
- * - `key` session cookie name ["koa:sess"]
+ * - `key` session cookie name ["koa.sess"]
  * - all other options are passed as cookie options
  *
  * @param {Object} [opts]
@@ -60,7 +60,7 @@ module.exports = function(opts, app) {
 function formatOpts(opts) {
   opts = opts || {};
   // key
-  opts.key = opts.key || 'koa:sess';
+  opts.key = opts.key || 'koa.sess';
 
   // back-compat maxage
   if (!('maxAge' in opts)) opts.maxAge = opts.maxage;

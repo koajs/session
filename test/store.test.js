@@ -90,7 +90,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, (err, res) => {
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
@@ -182,7 +182,7 @@ describe('Koa Session External Store', () => {
         request(app.listen())
         .get('/')
         .set('Cookie', cookie)
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -200,7 +200,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -235,7 +235,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -267,7 +267,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect({ foo: 'bar' })
         .expect(200, done);
       });
@@ -284,7 +284,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('1')
         .expect(200, done);
       });
@@ -301,7 +301,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('true')
         .expect(200, done);
       });
@@ -318,7 +318,7 @@ describe('Koa Session External Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('hello')
         .expect(200, done);
       });
@@ -353,7 +353,7 @@ describe('Koa Session External Store', () => {
 
       request(app.listen())
       .get('/')
-      .expect('Set-Cookie', /koa:sess/)
+      .expect('Set-Cookie', /koa\.sess/)
       .expect(401, done);
     });
   });
@@ -375,7 +375,7 @@ describe('Koa Session External Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -401,7 +401,7 @@ describe('Koa Session External Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -430,7 +430,7 @@ describe('Koa Session External Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -467,7 +467,7 @@ describe('Koa Session External Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -559,7 +559,7 @@ describe('Koa Session External Store', () => {
 
       request(app.listen())
       .get('/')
-      .set('cookie', 'koa:sess=invalid-key')
+      .set('cookie', 'koa.sess=invalid-key')
       .expect('true')
       .expect(200, done);
     });
@@ -604,7 +604,7 @@ describe('Koa Session External Store', () => {
         should.not.exist(err);
         const data = res.body;
         const cookies = res.headers['set-cookie'].join(';');
-        cookies.should.containEql('koa:sess=');
+        cookies.should.containEql('koa.sess=');
 
         request(app.callback())
         .get('/')
@@ -710,7 +710,7 @@ describe('Koa Session External Store', () => {
       .expect(204, (err, res) => {
         if (err) return done(err);
         const cookie = res.headers['set-cookie'];
-        cookie.join().should.match(/koa:sess=sess:/);
+        cookie.join().should.match(/koa\.sess=sess:/);
         request(server)
         .get('/')
         .set('Cookie', cookie.join(';'))

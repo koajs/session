@@ -1,3 +1,9 @@
+6.0.0 / 2020-04-26
+==================
+
+**fixes**
+  * [[`d34fc8e`](https://github.com/koajs/session/commit/d34fc8e0395bd3dc0c8cceda4374039a4d414060)] - fix: RFC6265 compliant default cookie name (#197) (zacanger <<zac@zacanger.com>>)
+    * [BREAKING CHANGE]: Default cookie is now `koa.sess` rather than `koa:sess`
 
 5.13.1 / 2020-02-01
 ==================

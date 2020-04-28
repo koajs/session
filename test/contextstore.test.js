@@ -87,7 +87,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, (err, res) => {
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
@@ -107,7 +107,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, (err, res) => {
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
@@ -200,7 +200,7 @@ describe('Koa Session External Context Store', () => {
         request(app.listen())
         .get('/')
         .set('Cookie', cookie)
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -218,7 +218,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -253,7 +253,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -285,7 +285,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect({ foo: 'bar' })
         .expect(200, done);
       });
@@ -302,7 +302,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('1')
         .expect(200, done);
       });
@@ -319,7 +319,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('true')
         .expect(200, done);
       });
@@ -336,7 +336,7 @@ describe('Koa Session External Context Store', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('hello')
         .expect(200, done);
       });
@@ -371,7 +371,7 @@ describe('Koa Session External Context Store', () => {
 
       request(app.listen())
       .get('/')
-      .expect('Set-Cookie', /koa:sess/)
+      .expect('Set-Cookie', /koa\.sess/)
       .expect(401, done);
     });
   });
@@ -415,7 +415,7 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end(err => {
           if (err) return done(err);
         })
@@ -441,7 +441,7 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -463,7 +463,7 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect('hi 1')
         .end((err, res) => {
           if (err) return done(err);
@@ -473,7 +473,7 @@ describe('Koa Session External Context Store', () => {
           request(server)
           .get('/')
           .set('cookie', cookie)
-          .expect('Set-Cookie', /koa:sess/)
+          .expect('Set-Cookie', /koa\.sess/)
           .expect('hi 2')
           .end((err, res) => {
             if (err) return done(err);
@@ -483,7 +483,7 @@ describe('Koa Session External Context Store', () => {
             request(server)
             .get('/')
             .set('cookie', cookie)
-            .expect('Set-Cookie', /koa:sess/)
+            .expect('Set-Cookie', /koa\.sess/)
             .expect('hi 3')
             .end((err, res) => {
               if (err) return done(err);
@@ -510,7 +510,7 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -539,7 +539,7 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -570,7 +570,7 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -655,7 +655,7 @@ describe('Koa Session External Context Store', () => {
 
       request(app.listen())
       .get('/')
-      .set('cookie', 'koa:sess=invalid-key')
+      .set('cookie', 'koa.sess=invalid-key')
       .expect('true')
       .expect(200, done);
     });
@@ -693,7 +693,7 @@ describe('Koa Session External Context Store', () => {
         should.not.exist(err);
         const data = res.body;
         const cookies = res.headers['set-cookie'].join(';');
-        cookies.should.containEql('koa:sess=');
+        cookies.should.containEql('koa.sess=');
 
         request(app.callback())
         .get('/')

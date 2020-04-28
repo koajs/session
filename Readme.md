@@ -36,6 +36,10 @@
 $ npm install koa-session
 ```
 
+## Notice
+
+6.x changed the default cookie key from `koa:sess` to `koa.sess` to ensure `set-cookie` value valid with HTTP spec.[see issue](https://github.com/koajs/session/issues/28). If you want to be compatible with the previous version, you can manually set `config.key` to `koa:sess`.
+
 ## Example
 
   View counter example:

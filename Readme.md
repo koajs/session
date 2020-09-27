@@ -111,9 +111,9 @@ console.log('listening on port 3000');
 
   You can store the session content in external stores (Redis, MongoDB or other DBs) by passing `options.store` with three methods (these need to be async functions):
 
-  - `get(key, maxAge, { rolling })`: get session object by key
-  - `set(key, sess, maxAge, { rolling, changed })`: set session object for key, with a `maxAge` (in ms)
-  - `destroy(key)`: destroy session for key
+  - `get(key, maxAge, { rolling, ctx })`: get session object by key
+  - `set(key, sess, maxAge, { rolling, changed, ctx })`: set session object for key, with a `maxAge` (in ms)
+  - `destroy(key, {ctx})`: destroy session for key
 
 
   Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid using session as a cache, keep the session lean, and store it in a cookie if possible!**

@@ -2,12 +2,8 @@
 
 const Koa = require('koa');
 const request = require('supertest');
-const should = require('should');
 const session = require('..');
 const store = require('./store_with_ctx');
-const pedding = require('pedding');
-const assert = require('assert');
-const sleep = require('mz-modules/sleep');
 
 describe('Koa Session External Store methods can acceess Koa context', () => {
   let cookie;

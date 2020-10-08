@@ -1,3 +1,12 @@
+
+6.1.0 / 2020-10-08
+==================
+
+**features**
+  * [[`32e3526`](http://github.com/koajs/session/commit/32e352665f2adbcda34d1d990bb6c5d875c0b625)] - feat: add context to external store .get() and .set() options params (#201) (Ngorror <<ngorror@gmail.com>>)
+
+**others**
+  * [[`f765595`](http://github.com/koajs/session/commit/f76559568bb7f6321cab3f44ae759521deca3dd1)] - chore: Create LICENSE File (#195) (Dominic Egginton <<dominic.egginton@gmail.com>>)
 6.0.0 / 2020-04-26
 ==================
 

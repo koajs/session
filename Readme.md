@@ -83,6 +83,19 @@ app.listen(3000);
 console.log('listening on port 3000');
 ```
 
+  Keys prefixed with underscore:
+ 
+```js
+// OK
+ctx.session._foo = 'bar';
+// You can set session properties prefixed with one underscore
+
+// Bad idea
+ctx.session.__foo = 'bar';
+// But not with two. koa-session doesn't save keys prefixed with 2 underscore 
+// Because it prefixes internal keys with 2 underscores
+``` 
+
 ## API
 
 ### Options

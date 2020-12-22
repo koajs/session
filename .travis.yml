@@ -2,5 +2,8 @@ sudo: false
 language: node_js
 node_js:
   - '7'
+  - '8'
+  - '10'
+  - '12'
 script: 'npm run test-travis'
 after_script: 'npm install coveralls@2 && cat ./coverage/lcov.info | coveralls'

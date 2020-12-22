@@ -1,8 +1,8 @@
 {
   "name": "koa-session",
-  "description": "Koa cookie session middleware",
+  "description": "Koa cookie session middleware with external store support",
   "repository": "koajs/session",
-  "version": "5.0.0",
+  "version": "6.1.0",
   "keywords": [
     "koa",
     "middleware",
@@ -14,28 +14,33 @@
     "lib"
   ],
   "devDependencies": {
+    "benchmark": "^2.1.4",
     "eslint": "3",
     "eslint-config-egg": "3",
     "istanbul": "0",
     "koa": "2",
     "mm": "^2.1.0",
-    "mocha": "3",
+    "mocha": "^5.2.0",
+    "mz-modules": "^2.0.0",
+    "pedding": "^1.1.0",
+    "uid-safe": "^2.1.3",
     "should": "8",
-    "supertest": "2"
+    "supertest": "^3.3.0"
   },
   "license": "MIT",
   "dependencies": {
     "crc": "^3.4.4",
-    "debug": "^2.2.0",
-    "uid-safe": "^2.1.3"
+    "debug": "^3.1.0",
+    "is-type-of": "^1.0.0",
+    "uuid": "^3.3.2"
   },
   "engines": {
     "node": ">=7.6"
   },
   "scripts": {
-    "test": "npm run lint && NODE_ENV=test mocha --require should --reporter spec test/*.test.js",
-    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require should test/*.test.js",
-    "test-travis": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --require should test/*.test.js",
+    "test": "npm run lint && NODE_ENV=test mocha --exit --require should --reporter spec test/*.test.js",
+    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --exit --require should test/*.test.js",
+    "test-travis": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --exit --require should test/*.test.js",
     "lint": "eslint lib test index.js"
   }
 }

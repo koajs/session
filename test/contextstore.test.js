@@ -5,12 +5,9 @@ const request = require('supertest');
 const should = require('should');
 const mm = require('mm');
 const session = require('..');
-const store = require('./store');
-const pedding = require('pedding');
-const assert = require('assert');
-const sleep = require('mz-modules/sleep');
+const ContextStore = require('./context_store');
 
-describe('Koa Session External Store', () => {
+describe('Koa Session External Context Store', () => {
   let cookie;
 
   describe('when the session contains a ;', () => {
@@ -94,6 +91,27 @@ describe('Koa Session External Store', () => {
         .expect(200, (err, res) => {
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
+          cookie.indexOf('_suffix').should.greaterThan(1);
+          done();
+        });
+      });
+
+      it('should pass sid to middleware', done => {
+        const app = App();
+
+        app.use(async function(ctx) {
+          ctx.session.message = 'hello';
+          ctx.state.sid.indexOf('_suffix').should.greaterThan(1);
+          ctx.body = '';
+        });
+
+        request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa\.sess/)
+        .expect(200, (err, res) => {
+          if (err) return done(err);
+          cookie = res.header['set-cookie'].join(';');
+          cookie.indexOf('_suffix').should.greaterThan(1);
           done();
         });
       });
@@ -340,7 +358,7 @@ describe('Koa Session External Store', () => {
         }
       });
 
-      app.use(session({ store }, app));
+      app.use(session({ ContextStore }, app));
 
       app.use(async function(ctx, next) {
         ctx.session.name = 'funny';
@@ -355,6 +373,54 @@ describe('Koa Session External Store', () => {
       .get('/')
       .expect('Set-Cookie', /koa\.sess/)
       .expect(401, done);
+    });
+  });
+
+  describe('when autoCommit is present', () => {
+    describe('and set to false', () => {
+      it('should not set headers if manuallyCommit() isn\'t called', done => {
+        const app = App({ autoCommit: false });
+        app.use(async function(ctx) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'hi';
+            ctx.body = 200;
+            return;
+          }
+          ctx.body = ctx.session.message;
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .end((err, res) => {
+          if (err) return done(err);
+          const cookie = res.headers['set-cookie'];
+          should.not.exist(cookie);
+        })
+        .expect(200, done);
+      });
+      it('should set headers if manuallyCommit() is called', done => {
+        const app = App({ autoCommit: false });
+        app.use(async function(ctx, next) {
+          if (ctx.method === 'POST') {
+            ctx.session.message = 'dummy';
+          }
+          await next();
+        });
+        app.use(async function(ctx) {
+          ctx.body = 200;
+          await ctx.session.manuallyCommit();
+        });
+        const server = app.listen();
+
+        request(server)
+        .post('/')
+        .expect('Set-Cookie', /koa\.sess/)
+        .end(err => {
+          if (err) return done(err);
+        })
+        .expect(200, done);
+      });
     });
   });
 
@@ -384,6 +450,49 @@ describe('Koa Session External Store', () => {
           .get('/')
           .set('cookie', cookie)
           .expect('hi', done);
+        });
+      });
+      it('should not expire the session after multiple session changes', done => {
+        const app = App({ maxAge: 'session' });
+
+        app.use(async function(ctx) {
+          ctx.session.count = (ctx.session.count || 0) + 1;
+          ctx.body = `hi ${ctx.session.count}`;
+        });
+        const server = app.listen();
+
+        request(server)
+        .get('/')
+        .expect('Set-Cookie', /koa\.sess/)
+        .expect('hi 1')
+        .end((err, res) => {
+          if (err) return done(err);
+          let cookie = res.headers['set-cookie'].join(';');
+          cookie.should.not.containEql('expires=');
+
+          request(server)
+          .get('/')
+          .set('cookie', cookie)
+          .expect('Set-Cookie', /koa\.sess/)
+          .expect('hi 2')
+          .end((err, res) => {
+            if (err) return done(err);
+            cookie = res.headers['set-cookie'].join(';');
+            cookie.should.not.containEql('expires=');
+
+            request(server)
+            .get('/')
+            .set('cookie', cookie)
+            .expect('Set-Cookie', /koa\.sess/)
+            .expect('hi 3')
+            .end((err, res) => {
+              if (err) return done(err);
+              cookie = res.headers['set-cookie'].join(';');
+              cookie.should.not.containEql('expires=');
+
+              done();
+            });
+          });
         });
       });
       it('should use the default maxAge when improper string given', done => {
@@ -445,14 +554,8 @@ describe('Koa Session External Store', () => {
 
     describe('and expired', () => {
       it('should expire the sess', done => {
-        done = pedding(done, 2);
         const app = App({ maxAge: 100 });
-        app.on('session:expired', args => {
-          assert(args.key.match(/^\w+-/));
-          assert(args.value);
-          assert(args.ctx);
-          done();
-        });
+
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
             ctx.session.message = 'hi';
@@ -542,61 +645,12 @@ describe('Koa Session External Store', () => {
     });
   });
 
-  describe('ctx.session.regenerate', () => {
-    it('should change the session key, but not content', done => {
-      const app = new App();
-      const message = 'hi';
-      app.use(async function(ctx, next) {
-        ctx.session = { message: 'hi' };
-        await next();
-      });
-
-      app.use(async function(ctx, next) {
-        const sessionKey = ctx.cookies.get('koa:sess');
-        if (sessionKey) {
-          await ctx.session.regenerate();
-        }
-        await next();
-      });
-
-      app.use(async function(ctx) {
-        ctx.session.message.should.equal(message);
-        ctx.body = '';
-      });
-      let koaSession = null;
-      request(app.callback())
-      .get('/')
-      .expect(200, (err, res) => {
-        should.not.exist(err);
-        koaSession = res.headers['set-cookie'][0];
-        koaSession.should.containEql('koa:sess=');
-        request(app.callback())
-        .get('/')
-        .set('Cookie', koaSession)
-        .expect(200, (err, res) => {
-          should.not.exist(err);
-          const cookies = res.headers['set-cookie'][0];
-          cookies.should.containEql('koa:sess=');
-          cookies.should.not.equal(koaSession);
-          done();
-        });
-      });
-    });
-  });
-
   describe('when store return empty', () => {
     it('should create new Session', done => {
-      done = pedding(done, 2);
       const app = App({ signed: false });
 
       app.use(async function(ctx) {
         ctx.body = String(ctx.session.isNew);
-      });
-
-      app.on('session:missed', args => {
-        assert(args.key === 'invalid-key');
-        assert(args.ctx);
-        done();
       });
 
       request(app.listen())
@@ -609,7 +663,6 @@ describe('Koa Session External Store', () => {
 
   describe('when valid and beforeSave set', () => {
     it('should ignore session when uid changed', done => {
-      done = pedding(done, 2);
       const app = new Koa();
 
       app.keys = [ 'a', 'b' ];
@@ -620,7 +673,7 @@ describe('Koa Session External Store', () => {
         beforeSave(ctx, sess) {
           sess.uid = ctx.cookies.get('uid');
         },
-        store,
+        ContextStore,
       }, app));
       app.use(async function(ctx) {
         if (!ctx.session.foo) {
@@ -631,12 +684,6 @@ describe('Koa Session External Store', () => {
           foo: ctx.session.foo,
           uid: ctx.cookies.get('uid'),
         };
-      });
-      app.on('session:invalid', args => {
-        assert(args.key);
-        assert(args.value);
-        assert(args.ctx);
-        done();
       });
 
       request(app.callback())
@@ -692,168 +739,18 @@ describe('Koa Session External Store', () => {
       .expect(200, done);
     });
   });
-
-  describe('when rolling set to true', () => {
-    let app;
-    before(() => {
-      app = App({ rolling: true });
-
-      app.use(async ctx => {
-        if (ctx.path === '/set') ctx.session = { foo: 'bar' };
-        ctx.body = ctx.session;
-      });
-    });
-
-    it('should not send set-cookie when session not exists', () => {
-      return request(app.callback())
-      .get('/')
-      .expect({})
-      .expect(res => {
-        should.not.exist(res.headers['set-cookie']);
-      });
-    });
-
-    it('should send set-cookie when session exists and not change', done => {
-      request(app.callback())
-      .get('/set')
-      .expect({ foo: 'bar' })
-      .end((err, res) => {
-        should.not.exist(err);
-        res.headers['set-cookie'].should.have.length(2);
-        const cookie = res.headers['set-cookie'].join(';');
-        request(app.callback())
-        .get('/')
-        .set('cookie', cookie)
-        .expect(res => {
-          res.headers['set-cookie'].should.have.length(2);
-        })
-        .expect({ foo: 'bar' }, done);
-      });
-    });
-  });
-
-  describe('when prefix present', () => {
-    it('should still work', done => {
-      const app = App({ prefix: 'sess:' });
-
-      app.use(async ctx => {
-        if (ctx.method === 'POST') {
-          ctx.session.string = ';';
-          ctx.status = 204;
-        } else {
-          ctx.body = ctx.session.string;
-        }
-      });
-
-      const server = app.listen();
-
-      request(server)
-      .post('/')
-      .expect(204, (err, res) => {
-        if (err) return done(err);
-        const cookie = res.headers['set-cookie'];
-        cookie.join().should.match(/koa\.sess=sess:/);
-        request(server)
-        .get('/')
-        .set('Cookie', cookie.join(';'))
-        .expect(';', done);
-      });
-    });
-  });
-
-  describe('when renew set to true', () => {
-    let app;
-    before(() => {
-      app = App({ renew: true, maxAge: 2000 });
-
-      app.use(async ctx => {
-        if (ctx.path === '/set') ctx.session = { foo: 'bar' };
-        ctx.body = ctx.session;
-      });
-    });
-
-    it('should not send set-cookie when session not exists', () => {
-      return request(app.callback())
-      .get('/')
-      .expect({})
-      .expect(res => {
-        should.not.exist(res.headers['set-cookie']);
-      });
-    });
-
-    it('should send set-cookie when session near expire and not change', async () => {
-      let res = await request(app.callback())
-      .get('/set')
-      .expect({ foo: 'bar' });
-
-      res.headers['set-cookie'].should.have.length(2);
-      const cookie = res.headers['set-cookie'].join(';');
-      await sleep(1200);
-      res = await request(app.callback())
-      .get('/')
-      .set('cookie', cookie)
-      .expect({ foo: 'bar' });
-      res.headers['set-cookie'].should.have.length(2);
-    });
-
-    it('should not send set-cookie when session not near expire and not change', async () => {
-      let res = await request(app.callback())
-      .get('/set')
-      .expect({ foo: 'bar' });
-
-      res.headers['set-cookie'].should.have.length(2);
-      const cookie = res.headers['set-cookie'].join(';');
-      await sleep(500);
-      res = await request(app.callback())
-      .get('/')
-      .set('cookie', cookie)
-      .expect({ foo: 'bar' });
-      should.not.exist(res.headers['set-cookie']);
-    });
-  });
-
-  describe('when get session before middleware', () => {
-    it('should return empty session', async () => {
-      const app = new Koa();
-      app.keys = [ 'a', 'b' ];
-      const options = {};
-      options.store = store;
-      app.use(async (ctx, next) => {
-        // will not take effect
-        ctx.session.should.be.ok();
-        ctx.session.foo = '123';
-        await next();
-      });
-      app.use(session(options, app));
-      app.use(async ctx => {
-        if (ctx.path === '/set') ctx.session = { foo: 'bar' };
-        ctx.body = ctx.session;
-      });
-
-      let res = await request(app.callback())
-        .get('/')
-        .expect({});
-
-      res = await request(app.callback())
-        .get('/set')
-        .expect({ foo: 'bar' });
-
-      res.headers['set-cookie'].should.have.length(2);
-      const cookie = res.headers['set-cookie'].join(';');
-      await sleep(1200);
-      res = await request(app.callback())
-        .get('/')
-        .set('cookie', cookie)
-        .expect({ foo: 'bar' });
-    });
-  });
 });
 
 function App(options) {
   const app = new Koa();
   app.keys = [ 'a', 'b' ];
   options = options || {};
-  options.store = store;
+  options.ContextStore = ContextStore;
+  options.genid = ctx => {
+    const sid = Date.now() + '_suffix';
+    ctx.state.sid = sid;
+    return sid;
+  };
   app.use(session(options, app));
   return app;
 }

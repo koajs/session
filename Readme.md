@@ -26,13 +26,19 @@
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple session middleware for Koa. default is cookie-based session and support external store.
+ Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
+
+ *Requires Node 7.6 or greater for async/await support*
 
 ## Installation
 
 ```js
 $ npm install koa-session
 ```
+
+## Notice
+
+6.x changed the default cookie key from `koa:sess` to `koa.sess` to ensure `set-cookie` value valid with HTTP spec.[see issue](https://github.com/koajs/session/issues/28). If you want to be compatible with the previous version, you can manually set `config.key` to `koa:sess`.
 
 ## Example
 
@@ -46,12 +52,21 @@ const app = new Koa();
 app.keys = ['some secret hurr'];
 
 const CONFIG = {
-  key: 'koa:sess', /** (string) cookie key (default is koa:sess) */
-  maxAge: 86400000, /** (number) maxAge in ms (default is 1 days) */
+  key: 'koa.sess', /** (string) cookie key (default is koa.sess) */
+  /** (number || 'session') maxAge in ms (default is 1 days) */
+  /** 'session' will result in a cookie that expires when session/browser is closed */
+  /** Warning: If a session cookie is stolen, this cookie will never expire */
+  maxAge: 86400000,
+  autoCommit: true, /** (boolean) automatically commit headers (default true) */
   overwrite: true, /** (boolean) can overwrite or not (default true) */
   httpOnly: true, /** (boolean) httpOnly or not (default true) */
   signed: true, /** (boolean) signed or not (default true) */
+  rolling: false, /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */
+  renew: false, /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/
+  secure: true, /** (boolean) secure cookie*/
+  sameSite: null, /** (string) session cookie sameSite options (default null, don't set it) */
 };
+
 app.use(session(CONFIG, app));
 // or if you prefer all default config, just use => app.use(session(app));
 
@@ -73,7 +88,7 @@ console.log('listening on port 3000');
 ### Options
 
   The cookie name is controlled by the `key` option, which defaults
-  to "koa:sess". All other options are passed to `ctx.cookies.get()` and
+  to "koa.sess". All other options are passed to `ctx.cookies.get()` and
   `ctx.cookies.set()` allowing you to control security, domain, path,
   and signing among other settings.
 
@@ -88,20 +103,42 @@ console.log('listening on port 3000');
 
 ### External Session Stores
 
-  Session will store in cookie by default, but it has some disadvantages:
+  The session is stored in a cookie by default, but it has some disadvantages:
 
-  - Session stored in client side unencrypted.
-  - [Browser cookie always have length limit](http://browsercookielimits.squawky.net/).
-
-
-  You can store the session content in external stores(redis, mongodb or other DBs) by pass `options.store` with three methods(need to be async function):
-
-  - `get(key)`: get session object by key
-  - `set(key, sess, maxAge)`: set session object for key, with a `maxAge` (in ms)
-  - `destroy(key)`: destroy session for key
+  - Session is stored on client side unencrypted
+  - [Browser cookies always have length limits](http://browsercookielimits.squawky.net/)
 
 
-  Once you passed `options.store`, session is strong dependent on your external store, you can't access session if your external store is down. **Use external session stores only if necessary, avoid use session as a cache, keep session lean and stored by cookie!**
+  You can store the session content in external stores (Redis, MongoDB or other DBs) by passing `options.store` with three methods (these need to be async functions):
+
+  - `get(key, maxAge, { rolling, ctx })`: get session object by key
+  - `set(key, sess, maxAge, { rolling, changed, ctx })`: set session object for key, with a `maxAge` (in ms)
+  - `destroy(key, {ctx})`: destroy session for key
+
+
+  Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid using session as a cache, keep the session lean, and store it in a cookie if possible!**
+
+
+  The way of generating external session id is controlled by the `options.genid(ctx)`, which defaults to `uuid.v4()`.
+
+  If you want to add prefix for all external session id, you can use `options.prefix`, it will not work if `options.genid(ctx)` present.
+
+  If your session store requires data or utilities from context, `opts.ContextStore` is also supported. `ContextStore` must be a class which claims three instance methods demonstrated above. `new ContextStore(ctx)` will be executed on every request.
+
+### Events
+
+`koa-session` will emit event on `app` when session expired or invalid:
+
+- `session:missed`: can't get session value from external store.
+- `session:invalid`: session value is invalid.
+- `session:expired`: session value is expired.
+
+### Custom External Key
+
+External key is used the cookie by default, but you can use `options.externalKey` to customize your own external key methods. `options.externalKey` with two methods:
+
+- `get(ctx)`: get the external key
+- `set(ctx, value)`: set the external key
 
 ### Session#isNew
 
@@ -126,6 +163,10 @@ if (this.session.isNew) {
 ### Session#save()
 
   Save this session no matter whether it is populated.
+
+### Session#manuallyCommit()
+
+  Session headers are auto committed by default. Use this if `autoCommit` is set to `false`.
 
 ### Destroying a session
 

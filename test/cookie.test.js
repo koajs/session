@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('assert');
 const Koa = require('koa');
 const request = require('supertest');
 const should = require('should');
@@ -93,6 +94,8 @@ describe('Koa Session Cookie', () => {
       .expect(204, (err, res) => {
         if (err) return done(err);
         const cookie = res.headers['set-cookie'];
+        // samesite is not set
+        assert(!cookie.join(';').includes('samesite'));
         request(server)
         .get('/')
         .set('Cookie', cookie.join(';'))
@@ -150,7 +153,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, (err, res) => {
           if (err) return done(err);
           cookie = res.header['set-cookie'].join(';');
@@ -242,9 +245,55 @@ describe('Koa Session Cookie', () => {
         request(app.listen())
         .get('/')
         .set('Cookie', cookie)
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
+        .expect(res => {
+          const cookie = res.headers['set-cookie'];
+          // samesite is not set
+          assert(!cookie.join(';').includes('samesite'));
+        })
         .expect(200, done);
       });
+    });
+  });
+
+  describe('after session set to null with signed cookie', () => {
+    it('should return expired cookies', done => {
+      const app = App({
+        signed: true,
+      });
+
+      app.use(async function(ctx) {
+        ctx.session.hello = {};
+        ctx.session = null;
+        ctx.body = String(ctx.session === null);
+      });
+
+      request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa\.sess=; path=\/; expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+        .expect('Set-Cookie', /koa\.sess.sig=(.*); path=\/; expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+        .expect('true')
+        .expect(200, done);
+    });
+  });
+
+  describe('after session set to null without signed cookie', () => {
+    it('should return expired cookies', done => {
+      const app = App({
+        signed: false,
+      });
+
+      app.use(async function(ctx) {
+        ctx.session.hello = {};
+        ctx.session = null;
+        ctx.body = String(ctx.session === null);
+      });
+
+      request(app.listen())
+        .get('/')
+        .expect('Set-Cookie', /koa\.sess=; path=\/; expires=Thu, 01 Jan 1970 00:00:00 GMT/)
+        .expect('true')
+        .expect(200, done);
     });
   });
 
@@ -260,7 +309,7 @@ describe('Koa Session Cookie', () => {
 
       request(app.listen())
       .get('/')
-      .expect('Set-Cookie', /koa:sess=;/)
+      .expect('Set-Cookie', /koa\.sess=;/)
       .expect('true')
       .expect(200, done);
     });
@@ -277,7 +326,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .set('cookie', 'koa:sess=invalid-session;')
+        .set('cookie', 'koa.sess=invalid-session;')
         .expect('true')
         .expect(200, done);
       });
@@ -298,8 +347,8 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .set('cookie', 'koa:sess=invalid-session;')
-        .expect('Set-Cookie', /koa:sess=;/)
+        .set('cookie', 'koa.sess=invalid-session;')
+        .expect('Set-Cookie', /koa\.sess=;/)
         .expect(500, done);
       });
     });
@@ -341,7 +390,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect({ foo: 'bar' })
         .expect(200, done);
       });
@@ -358,7 +407,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('1')
         .expect(200, done);
       });
@@ -375,7 +424,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('true')
         .expect(200, done);
       });
@@ -392,7 +441,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess=.+;/)
+        .expect('Set-Cookie', /koa\.sess=.+;/)
         .expect('hello')
         .expect(200, done);
       });
@@ -411,7 +460,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -446,7 +495,7 @@ describe('Koa Session Cookie', () => {
 
         request(app.listen())
         .get('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .expect(200, done);
       });
     });
@@ -494,7 +543,7 @@ describe('Koa Session Cookie', () => {
 
       request(app.listen())
       .get('/')
-      .expect('Set-Cookie', /koa:sess/)
+      .expect('Set-Cookie', /koa\.sess/)
       .expect(401, done);
     });
   });
@@ -517,7 +566,7 @@ describe('Koa Session Cookie', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -548,7 +597,7 @@ describe('Koa Session Cookie', () => {
 
         request(server)
         .post('/')
-        .expect('Set-Cookie', /koa:sess/)
+        .expect('Set-Cookie', /koa\.sess/)
         .end((err, res) => {
           if (err) return done(err);
           const cookie = res.headers['set-cookie'].join(';');
@@ -684,13 +733,51 @@ describe('Koa Session Cookie', () => {
       .expect(200, (err, res) => {
         should.not.exist(err);
         const cookies = res.headers['set-cookie'].join(';');
-        cookies.should.containEql('koa:sess=');
+        cookies.should.containEql('koa.sess=');
 
         request(app.callback())
         .get('/')
         .set('Cookie', cookies)
         .expect(200, done);
       });
+    });
+  });
+
+  describe('options.sameSite', () => {
+    it('should return opt.sameSite=none', done => {
+      const app = App({ sameSite: 'none' });
+
+      app.use(async function(ctx) {
+        ctx.session = { foo: 'bar' };
+        ctx.body = ctx.session.foo;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect(res => {
+        const cookie = res.headers['set-cookie'].join('|');
+        assert(cookie.includes('path=/; samesite=none; httponly'));
+      })
+      .expect('bar')
+      .expect(200, done);
+    });
+
+    it('should return opt.sameSite=lax', done => {
+      const app = App({ sameSite: 'lax' });
+
+      app.use(async function(ctx) {
+        ctx.session = { foo: 'bar' };
+        ctx.body = ctx.session.foo;
+      });
+
+      request(app.listen())
+      .get('/')
+      .expect(res => {
+        const cookie = res.headers['set-cookie'].join('|');
+        assert(cookie.includes('path=/; samesite=lax; httponly'));
+      })
+      .expect('bar')
+      .expect(200, done);
     });
   });
 
@@ -725,7 +812,7 @@ describe('Koa Session Cookie', () => {
         should.not.exist(err);
         const data = res.body;
         const cookies = res.headers['set-cookie'].join(';');
-        cookies.should.containEql('koa:sess=');
+        cookies.should.containEql('koa.sess=');
 
         request(app.callback())
         .get('/')
@@ -795,6 +882,58 @@ describe('Koa Session Cookie', () => {
               });
           });
       });
+    });
+  });
+
+  describe('when rolling set to true', () => {
+    let app;
+    before(() => {
+      app = App({ rolling: true });
+
+      app.use(function* () {
+        console.log(this.path);
+        if (this.path === '/set') this.session = { foo: 'bar' };
+        this.body = this.session;
+      });
+    });
+
+    it('should not send set-cookie when session not exists', () => {
+      return request(app.callback())
+      .get('/')
+      .expect({})
+      .expect(res => {
+        should.not.exist(res.headers['set-cookie']);
+      });
+    });
+
+    it('should send set-cookie when session exists and not change', done => {
+      request(app.callback())
+      .get('/set')
+      .expect({ foo: 'bar' })
+      .end((err, res) => {
+        should.not.exist(err);
+        res.headers['set-cookie'].should.have.length(2);
+        const cookie = res.headers['set-cookie'].join(';');
+        request(app.callback())
+        .get('/')
+        .set('cookie', cookie)
+        .expect(res => {
+          res.headers['set-cookie'].should.have.length(2);
+        })
+        .expect({ foo: 'bar' }, done);
+      });
+    });
+  });
+
+  describe('init multi session middleware', () => {
+    it('should work', () => {
+      const app = new Koa();
+
+      app.keys = [ 'a', 'b' ];
+      const s1 = session({}, app);
+      const s2 = session({}, app);
+      assert(s1);
+      assert(s2);
     });
   });
 });

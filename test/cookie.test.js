@@ -6,6 +6,8 @@ const request = require('supertest');
 const should = require('should');
 const session = require('..');
 
+const inspect = Symbol.for('nodejs.util.inspect.custom');
+
 describe('Koa Session Cookie', () => {
   let cookie;
 
@@ -385,7 +387,7 @@ describe('Koa Session Cookie', () => {
 
         app.use(async function(ctx) {
           ctx.session.foo = 'bar';
-          ctx.body = ctx.session.inspect();
+          ctx.body = ctx.session[inspect]();
         });
 
         request(app.listen())

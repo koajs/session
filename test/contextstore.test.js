@@ -7,6 +7,8 @@ const mm = require('mm');
 const session = require('..');
 const ContextStore = require('./context_store');
 
+const inspect = Symbol.for('nodejs.util.inspect.custom');
+
 describe('Koa Session External Context Store', () => {
   let cookie;
 
@@ -280,7 +282,7 @@ describe('Koa Session External Context Store', () => {
 
         app.use(async function(ctx) {
           ctx.session.foo = 'bar';
-          ctx.body = ctx.session.inspect();
+          ctx.body = ctx.session[inspect]();
         });
 
         request(app.listen())

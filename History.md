@@ -1,4 +1,10 @@
 
+6.2.0 / 2021-03-30
+==================
+
+**features**
+  * [[`7cde341`](http://github.com/koajs/session/commit/7cde341db1691ee6885eb1b11ff3a3a3632fd5ce)] - feat: add session.externalKey (#207) (Yiyu He <<dead_horse@qq.com>>)
+
 6.1.0 / 2020-10-08
 ==================
 

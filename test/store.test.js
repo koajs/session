@@ -10,6 +10,8 @@ const pedding = require('pedding');
 const assert = require('assert');
 const sleep = require('mz-modules/sleep');
 
+const inspect = Symbol.for('nodejs.util.inspect.custom');
+
 describe('Koa Session External Store', () => {
   let cookie;
 
@@ -262,7 +264,7 @@ describe('Koa Session External Store', () => {
 
         app.use(async function(ctx) {
           ctx.session.foo = 'bar';
-          ctx.body = ctx.session.inspect();
+          ctx.body = ctx.session[inspect]();
         });
 
         request(app.listen())

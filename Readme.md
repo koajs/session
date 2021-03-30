@@ -160,6 +160,10 @@ if (this.session.isNew) {
 
   Set cookie's maxAge.
 
+### Session#externalKey
+
+  Get session external key, only exist when external session store present.
+
 ### Session#save()
 
   Save this session no matter whether it is populated.

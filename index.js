@@ -66,12 +66,12 @@ function formatOpts(opts) {
   if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
 
   // defaults
-  if (opts.overwrite == null) opts.overwrite = true;
-  if (opts.httpOnly == null) opts.httpOnly = true;
+  if (util.isNil(opts.overwrite)) opts.overwrite = true;
+  if (util.isNil(opts.httpOnly)) opts.httpOnly = true;
   // delete null sameSite config
-  if (opts.sameSite == null) delete opts.sameSite;
-  if (opts.signed == null) opts.signed = true;
-  if (opts.autoCommit == null) opts.autoCommit = true;
+  if (util.isNil(opts.sameSite)) delete opts.sameSite;
+  if (util.isNil(opts.signed)) opts.signed = true;
+  if (util.isNil(opts.autoCommit)) opts.autoCommit = true;
 
   debug('session options %j', opts);
 

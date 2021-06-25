@@ -4,7 +4,7 @@ const debug = require('debug')('koa-session');
 const ContextSession = require('./lib/context');
 const util = require('./lib/util');
 const assert = require('assert');
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 const is = require('is-type-of');
 
 const CONTEXT_SESSION = Symbol('context#contextSession');
@@ -105,8 +105,8 @@ function formatOpts(opts) {
   }
 
   if (!opts.genid) {
-    if (opts.prefix) opts.genid = () => `${opts.prefix}${uuid()}`;
-    else opts.genid = uuid;
+    if (opts.prefix) opts.genid = () => `${opts.prefix}${uuid.v4()}`;
+    else opts.genid = uuid.v4;
   }
 
   return opts;

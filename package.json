@@ -2,7 +2,7 @@
   "name": "koa-session",
   "description": "Koa cookie session middleware with external store support",
   "repository": "koajs/session",
-  "version": "6.2.0",
+  "version": "7.0.0",
   "keywords": [
     "koa",
     "middleware",
@@ -32,7 +32,7 @@
     "crc": "^3.4.4",
     "debug": "^3.1.0",
     "is-type-of": "^1.0.0",
-    "uuid": "^3.3.2"
+    "uuid": "^8.3.2"
   },
   "engines": {
     "node": ">=7.6"

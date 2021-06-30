@@ -35,7 +35,7 @@
     "uuid": "^8.3.2"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "scripts": {
     "test": "npm run lint && NODE_ENV=test mocha --exit --require should --reporter spec test/*.test.js",

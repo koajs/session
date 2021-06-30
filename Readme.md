@@ -28,10 +28,6 @@
 
  Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
 
- *6.x Requires Node 7.6 or greater for async/await support*
-
- *7.x Requires Node 8 or greater*
-
 ## Installation
 
 ```js

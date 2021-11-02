@@ -7,11 +7,11 @@ app.keys = ['some secret hurr'];
 
 app.use(session(app));
 
-app.use(function* (next){
-  if ('/favicon.ico' == this.path) return;
-  var n = this.session.views || 0;
-  this.session.views = ++n;
-  this.body = n + ' views';
+app.use(function(ctx, next){
+  if ('/favicon.ico' == ctx.path) return;
+  var n = ctx.session.views || 0;
+  ctx.session.views = ++n;
+  ctx.body = n + ' views';
 });
 
 app.listen(3000);

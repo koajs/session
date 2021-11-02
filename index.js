@@ -4,7 +4,7 @@ const debug = require('debug')('koa-session');
 const ContextSession = require('./lib/context');
 const util = require('./lib/util');
 const assert = require('assert');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const is = require('is-type-of');
 
 const CONTEXT_SESSION = Symbol('context#contextSession');
@@ -39,8 +39,6 @@ module.exports = function(opts, app) {
     if (sess.store) await sess.initFromExternal();
     try {
       await next();
-    } catch (err) {
-      throw err;
     } finally {
       if (opts.autoCommit) {
         await sess.commit();
@@ -122,7 +120,7 @@ function formatOpts(opts) {
  */
 
 function extendContext(context, opts) {
-  if (context.hasOwnProperty(CONTEXT_SESSION)) {
+  if (context.hasOwnProperty(CONTEXT_SESSION)) {  // eslint-disable-line no-prototype-builtins
     return;
   }
   Object.defineProperties(context, {

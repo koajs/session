@@ -850,7 +850,7 @@ describe('Koa Session Cookie', () => {
     before(() => {
       app = App({ rolling: true });
 
-      app.use(function* () {
+      app.use(function* () { // eslint-disable-line require-yield
         console.log(this.path);
         if (this.path === '/set') this.session = { foo: 'bar' };
         this.body = this.session;

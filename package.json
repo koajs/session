@@ -15,32 +15,42 @@
   ],
   "devDependencies": {
     "benchmark": "^2.1.4",
-    "eslint": "3",
-    "eslint-config-egg": "3",
-    "istanbul": "0",
-    "koa": "2",
-    "mm": "^2.1.0",
-    "mocha": "^5.2.0",
+    "c8": "^7.0.0",
+    "coveralls": "^3.0.0",
+    "eslint": "^8.0.0",
+    "koa": "^2.0.0",
+    "mm": "^3.0.0",
+    "mocha": "^9.0.0",
     "mz-modules": "^2.0.0",
     "pedding": "^1.1.0",
     "uid-safe": "^2.1.3",
-    "should": "8",
-    "supertest": "^3.3.0"
+    "should": "^13.0.0",
+    "supertest": "^6.0.0"
   },
   "license": "MIT",
   "dependencies": {
     "crc": "^3.4.4",
-    "debug": "^3.1.0",
+    "debug": "^4.0.0",
     "is-type-of": "^1.0.0",
-    "uuid": "^3.3.2"
+    "uuid": "^8.0.0"
   },
   "engines": {
-    "node": ">=7.6"
+    "node": ">=10.0.0"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true,
+      "mocha": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
   },
   "scripts": {
-    "test": "npm run lint && NODE_ENV=test mocha --exit --require should --reporter spec test/*.test.js",
-    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --exit --require should test/*.test.js",
-    "test-travis": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --exit --require should test/*.test.js",
-    "lint": "eslint lib test index.js"
+    "test": "NODE_ENV=test mocha --exit test/*.test.js",
+    "cover": "c8 npm test",
+    "lint": "eslint lib/ test/ index.js"
   }
 }

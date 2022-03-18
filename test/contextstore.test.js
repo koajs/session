@@ -394,12 +394,12 @@ describe('Koa Session External Context Store', () => {
 
         request(server)
         .post('/')
+        .expect(200)
         .end((err, res) => {
-          if (err) return done(err);
           const cookie = res.headers['set-cookie'];
           should.not.exist(cookie);
-        })
-        .expect(200, done);
+          done();
+        });
       });
       it('should set headers if manuallyCommit() is called', done => {
         const app = App({ autoCommit: false });
@@ -418,9 +418,6 @@ describe('Koa Session External Context Store', () => {
         request(server)
         .post('/')
         .expect('Set-Cookie', /koa\.sess/)
-        .end(err => {
-          if (err) return done(err);
-        })
         .expect(200, done);
       });
     });

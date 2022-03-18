@@ -380,7 +380,7 @@ describe('Koa Session External Context Store', () => {
 
   describe('when autoCommit is present', () => {
     describe('and set to false', () => {
-      it('should not set headers if manuallyCommit() isn\'t called', () => {
+      it('should not set headers if manuallyCommit() isn\'t called', done => {
         const app = App({ autoCommit: false });
         app.use(async function(ctx) {
           if (ctx.method === 'POST') {
@@ -398,6 +398,7 @@ describe('Koa Session External Context Store', () => {
         .end((err, res) => {
           const cookie = res.headers['set-cookie'];
           should.not.exist(cookie);
+          done();
         });
       });
       it('should set headers if manuallyCommit() is called', done => {

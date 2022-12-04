@@ -674,6 +674,48 @@ describe('Koa Session Cookie', () => {
     });
   });
 
+  describe('ctx.session.regenerate', () => {
+    it('should change the session key, but not content', done => {
+      const app = new App();
+      const message = 'hi';
+      app.use(async function(ctx, next) {
+        ctx.session = { message: 'hi' };
+        await next();
+      });
+
+      app.use(async function(ctx, next) {
+        const sessionKey = ctx.cookies.get('koa.sess');
+        if (sessionKey) {
+          await ctx.session.regenerate();
+        }
+        await next();
+      });
+
+      app.use(async function(ctx) {
+        ctx.session.message.should.equal(message);
+        ctx.body = '';
+      });
+      let koaSession = null;
+      request(app.callback())
+      .get('/')
+      .expect(200, (err, res) => {
+        should.not.exist(err);
+        koaSession = res.headers['set-cookie'][0];
+        koaSession.should.containEql('koa.sess=');
+        request(app.callback())
+        .get('/')
+        .set('Cookie', koaSession)
+        .expect(200, (err, res) => {
+          should.not.exist(err);
+          const cookies = res.headers['set-cookie'][0];
+          cookies.should.containEql('koa.sess=');
+          cookies.should.not.equal(koaSession);
+          done();
+        });
+      });
+    });
+  });
+
   describe('when get session before enter session middleware', () => {
     it('should work', done => {
       const app = new Koa();

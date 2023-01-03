@@ -1,4 +1,10 @@
 
+6.3.1 / 2023-01-03
+==================
+
+**fixes**
+  * [[`e2de39e`](http://github.com/koajs/session/commit/e2de39e6acaf5eef9c8660cbd864ecccaa2b60d0)] - fix: keep crc v3 (#223) (fengmk2 <<fengmk2@gmail.com>>)
+
 6.3.0 / 2023-01-03
 ==================
 

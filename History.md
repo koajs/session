@@ -1,4 +1,13 @@
 
+6.3.0 / 2023-01-03
+==================
+
+**features**
+  * [[`878669e`](http://github.com/koajs/session/commit/878669ee2c734e3d9902d83f57e21d2113178b79)] - feat: update uuid to v8 (#218) (zhennann <<zhen.nann@icloud.com>>)
+
+**others**
+  * [[`df2d28f`](http://github.com/koajs/session/commit/df2d28ffb177272739964eb5a503f93db870aa28)] - test: run ci on GitHub Action (#222) (fengmk2 <<fengmk2@gmail.com>>)
+
 6.2.0 / 2021-03-30
 ==================
 

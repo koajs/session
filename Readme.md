@@ -1,14 +1,11 @@
 # koa-session
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
+[![Node.js CI](https://github.com/koajs/session/actions/workflows/nodejs.yml/badge.svg)](https://github.com/koajs/session/actions/workflows/nodejs.yml)
 [![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/koa-session.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/koa-session
-[coveralls-image]: https://img.shields.io/coveralls/koajs/session.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/r/koajs/session?branch=master
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 

@@ -1,34 +1,17 @@
 # koa-session
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
-[![Gittip][gittip-image]][gittip-url]
-[![David deps][david-image]][david-url]
-[![iojs version][iojs-image]][iojs-url]
-[![node version][node-image]][node-url]
+[![Node.js CI](https://github.com/koajs/session/actions/workflows/nodejs.yml/badge.svg)](https://github.com/koajs/session/actions/workflows/nodejs.yml)
 [![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/koa-session.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/koa-session
-[travis-image]: https://img.shields.io/travis/koajs/session.svg?style=flat-square
-[travis-url]: https://travis-ci.org/koajs/session
-[coveralls-image]: https://img.shields.io/coveralls/koajs/session.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/r/koajs/session?branch=master
-[gittip-image]: https://img.shields.io/gittip/fengmk2.svg?style=flat-square
-[gittip-url]: https://www.gittip.com/fengmk2/
-[david-image]: https://img.shields.io/david/koajs/session.svg?style=flat-square
-[david-url]: https://david-dm.org/koajs/session
-[iojs-image]: https://img.shields.io/badge/io.js-%3E=_1.0-yellow.svg?style=flat-square
-[iojs-url]: http://iojs.org/
-[node-image]: https://img.shields.io/badge/node.js-%3E=_7.6-green.svg?style=flat-square
-[node-url]: http://nodejs.org/download/
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
  Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
 
- *Requires Node 7.6 or greater for async/await support*
+ *Requires Node 8.0.0 or greater for async/await support*
 
 ## Installation
 

@@ -29,7 +29,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "crc": "^4.0.0",
+    "crc": "^3.8.0",
     "debug": "^4.3.3",
     "is-type-of": "^1.2.1",
     "uuid": "^8.3.2"

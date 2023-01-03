@@ -11,7 +11,7 @@
 
  Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
 
- *Requires Node 7.6 or greater for async/await support*
+ *Requires Node 8.0.0 or greater for async/await support*
 
 ## Installation
 

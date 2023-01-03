@@ -40,7 +40,7 @@
   "scripts": {
     "test": "npm run lint && NODE_ENV=test mocha --exit --require should --reporter spec test/*.test.js",
     "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --exit --require should test/*.test.js",
-    "test-travis": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --exit --require should test/*.test.js",
+    "ci": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --exit --require should test/*.test.js",
     "lint": "eslint lib test index.js"
   }
 }

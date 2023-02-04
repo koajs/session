@@ -1,4 +1,10 @@
 
+6.4.0 / 2023-02-04
+==================
+
+**features**
+  * [[`4cd3bef`](http://github.com/koajs/session/commit/4cd3bef4fc1900b847d2e133e3b2599a711f1aea)] - feat: Add Session.regenerate() method (#221) (Jürg Lehni <<juerg@scratchdisk.com>>)
+
 6.3.1 / 2023-01-03
 ==================
 

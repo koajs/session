@@ -2,7 +2,7 @@
   "name": "koa-session",
   "description": "Koa cookie session middleware with external store support",
   "repository": "koajs/session",
-  "version": "6.3.1",
+  "version": "6.4.0",
   "keywords": [
     "koa",
     "middleware",

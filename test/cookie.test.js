@@ -757,8 +757,12 @@ describe('Koa Session Cookie', () => {
       request(app.listen())
       .get('/')
       .expect(res => {
-        const cookie = res.headers['set-cookie'].join('|');
-        assert(cookie.includes('path=/; samesite=none; httponly'));
+        const cookies = res.headers['set-cookie'];
+        cookies.length.should.equal(2);
+        for (const cookie of cookies) {
+          assert(cookie.includes('samesite=none; httponly'));
+          assert(cookie.includes('path=/;'));
+        }
       })
       .expect('bar')
       .expect(200, done);
@@ -775,8 +779,12 @@ describe('Koa Session Cookie', () => {
       request(app.listen())
       .get('/')
       .expect(res => {
-        const cookie = res.headers['set-cookie'].join('|');
-        assert(cookie.includes('path=/; samesite=lax; httponly'));
+        const cookies = res.headers['set-cookie'];
+        cookies.length.should.equal(2);
+        for (const cookie of cookies) {
+          assert(cookie.includes('samesite=lax; httponly'));
+          assert(cookie.includes('path=/;'));
+        }
       })
       .expect('bar')
       .expect(200, done);

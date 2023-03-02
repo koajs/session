@@ -849,6 +849,107 @@ describe('Koa Session External Store', () => {
         .expect({ foo: 'bar' });
     });
   });
+
+  describe('when ussing ttl', () => {
+    let app;
+    let currentStoreOpts;
+    let currentSessionOpts;
+    const ONE_DAY = 86400000;
+
+    const testMW = async ctx => {
+      ctx.session = { foo: 'bar' };
+      ctx.status = 204;
+      currentStoreOpts = ctx.session._sessCtx.externalKey;
+      currentSessionOpts = ctx.session._sessCtx.opts;
+    };
+
+    it('should use given ttl without affecting maxAge', async () => {
+      const originalTTL = 43200000;
+      app = App({ ttl: originalTTL });
+      app.use(testMW);
+      const res = await request(app.callback())
+        .get('/')
+        .expect({});
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      cookie.should.containEql('expires=');
+      const storeKey = await store.get(currentStoreOpts);
+      storeKey._maxAge.should.equal(ONE_DAY);
+      currentSessionOpts.ttl.should.equal(originalTTL);
+      currentSessionOpts.maxAge.should.equal(ONE_DAY);
+    });
+
+    it('should use maxAge value if ttl is not provided', async () => {
+      const maxAge = 10000;
+      app = App({ maxAge });
+      app.use(testMW);
+      const res = await request(app.callback())
+        .get('/')
+        .expect({});
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      cookie.should.containEql('expires=');
+      const storeKey = await store.get(currentStoreOpts);
+      storeKey._maxAge.should.equal(maxAge);
+      currentSessionOpts.ttl.should.equal(maxAge + 10000);
+      currentSessionOpts.maxAge.should.equal(maxAge);
+    });
+
+    it('should use default ONE_DAY if ttl is not provided and maxAge is session', async () => {
+      const maxAge = 'session';
+      app = App({ maxAge });
+      app.use(testMW);
+      const res = await request(app.callback())
+        .get('/')
+        .expect({});
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      cookie.should.not.containEql('expires=');
+      const storeKey = await store.get(currentStoreOpts);
+      should.not.exist(storeKey._maxAge);
+      currentSessionOpts.ttl.should.equal(ONE_DAY);
+      should.not.exists(currentSessionOpts.maxAge);
+    });
+
+    it('should leave store ttl as undefined if ttl is permanent', async () => {
+      app = App({ ttl: 'permanent' });
+      app.use(testMW);
+      const res = await request(app.callback())
+        .get('/')
+        .expect({});
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      cookie.should.containEql('expires=');
+      const storeKey = await store.get(currentStoreOpts);
+      storeKey._maxAge.should.equal(ONE_DAY);
+      currentSessionOpts.ttl.should.equal('permanent');
+      currentSessionOpts.maxAge.should.equal(ONE_DAY);
+    });
+
+    it('should allow changing ttl on request basis', async () => {
+      app = App({ ttl: 'permanent' });
+      app.use((ctx, next) => {
+        ctx.sessionOptions.ttl = 100000;
+        next();
+      });
+      app.use(testMW);
+      const res = await request(app.callback())
+        .get('/')
+        .expect({});
+
+      res.headers['set-cookie'].should.have.length(2);
+      const cookie = res.headers['set-cookie'].join(';');
+      cookie.should.containEql('expires=');
+      const storeKey = await store.get(currentStoreOpts);
+      storeKey._maxAge.should.equal(ONE_DAY);
+      currentSessionOpts.ttl.should.equal(100000);
+      currentSessionOpts.maxAge.should.equal(ONE_DAY);
+    });
+  });
 });
 
 function App(options) {

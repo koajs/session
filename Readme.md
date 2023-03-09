@@ -29,10 +29,12 @@ $ npm install koa-session
 
 ```js
 const session = require('koa-session');
+const Keygrip = require('keygrip');
 const Koa = require('koa');
 const app = new Koa();
 
-app.keys = ['some secret hurr'];
+/** Redefining Keygrip to use sha512 */
+app.keys = new Keygrip(['insert 64 bytes random string', 'insert another 64 bytes random string'], 'sha512');
 
 const CONFIG = {
   key: 'koa.sess', /** (string) cookie key (default is koa.sess) */

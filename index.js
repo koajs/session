@@ -65,6 +65,8 @@ function formatOpts(opts) {
   // back-compat maxage
   if (!('maxAge' in opts)) opts.maxAge = opts.maxage;
 
+  opts.maxAge = opts.maxAge || 86400000;
+
   // defaults
   if (opts.overwrite == null) opts.overwrite = true;
   if (opts.httpOnly == null) opts.httpOnly = true;

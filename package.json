@@ -26,6 +26,7 @@
     "koa": "2",
     "mm": "4",
     "rimraf": "6",
+    "snap-shot-it": "^7.9.10",
     "tshy": "3",
     "tshy-after": "1",
     "typescript": "5"
@@ -33,9 +34,7 @@
   "license": "MIT",
   "dependencies": {
     "crc": "^3.8.0",
-    "debug": "^4.3.3",
     "is-type-of": "^2.2.0",
-    "uuid": "^8.3.2",
     "zod": "^3.24.1"
   },
   "engines": {

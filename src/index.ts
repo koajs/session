@@ -11,7 +11,7 @@ const debug = debuglog('koa-session');
 const GET_CONTEXT_SESSION = Symbol('get contextSession');
 const CONTEXT_SESSION_INSTANCE = Symbol('contextSession instance');
 
-const SessionOptionsSchema = z.object({
+export const SessionOptions = z.object({
   /**
    * cookie key
    * Default is `koa.sess`
@@ -159,9 +159,9 @@ const SessionOptionsSchema = z.object({
     .optional(),
 });
 
-const DEFAULT_SESSION_OPTIONS = SessionOptionsSchema.parse({});
+const DEFAULT_SESSION_OPTIONS = SessionOptions.parse({});
 
-export type SessionOptions = z.infer<typeof SessionOptionsSchema>;
+export type SessionOptions = z.infer<typeof SessionOptions>;
 export type CreateSessionOptions = Partial<SessionOptions>;
 
 type Middleware = (ctx: any, next: any) => Promise<void>;
@@ -199,7 +199,7 @@ export function createSession(opts: CreateSessionOptions | any, app: any): Middl
     ...DEFAULT_SESSION_OPTIONS,
     ...opts,
   };
-  SessionOptionsSchema.parse(options);
+  SessionOptions.parse(options);
   options = formatOptions(options);
   extendContext(app.context, options);
 

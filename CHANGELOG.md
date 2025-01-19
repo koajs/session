@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.0.2](https://github.com/koajs/session/compare/v7.0.1...v7.0.2) (2025-01-19)
+
+
+### Bug Fixes
+
+* make sure options instance is not mutated ([#230](https://github.com/koajs/session/issues/230)) ([c45bf8b](https://github.com/koajs/session/commit/c45bf8b236f8b79f4d2e4ed40b7fae585f30330b))
+
 ## [7.0.1](https://github.com/koajs/session/compare/v7.0.0...v7.0.1) (2025-01-19)
 
 

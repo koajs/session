@@ -3,6 +3,9 @@
   "description": "Koa cookie session middleware with external store support",
   "repository": "koajs/session",
   "version": "6.4.0",
+  "publishConfig": {
+    "tag": "latest-6"
+  },
   "keywords": [
     "koa",
     "middleware",

@@ -526,16 +526,15 @@ describe('Koa Session External Store', () => {
         .get('/')
         .expect(200);
 
-      const koaSession = res.headers['set-cookie'][0];
-      assert(koaSession.includes('koa.sess='));
-
+      const koaSession = res.get('Set-Cookie')!.join(';');
+      assert.match(koaSession, /koa\.sess=/);
       res = await request(app.callback())
         .get('/')
         .set('Cookie', koaSession)
         .expect(200);
 
-      const cookies = res.headers['set-cookie'][0];
-      assert(cookies.includes('koa.sess='));
+      const cookies = res.get('Set-Cookie')!.join(';');
+      assert.match(cookies, /koa\.sess=/);
       assert.notEqual(cookies, koaSession);
     });
   });

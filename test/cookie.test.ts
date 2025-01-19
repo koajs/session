@@ -677,20 +677,19 @@ describe('Koa Session Cookie', () => {
         assert.equal(ctx.session!.message, message);
         ctx.body = '';
       });
-      let koaSession = null;
-      const res = await request(app.callback())
+      let res = await request(app.callback())
         .get('/')
         .expect(200);
 
-      koaSession = res.headers['set-cookie'][0];
-      assert(koaSession.includes('koa.sess='));
-      const res2 = await request(app.callback())
+      const koaSession = res.get('Set-Cookie')!.join(';');
+      assert.match(koaSession, /koa\.sess=/);
+      res = await request(app.callback())
         .get('/')
         .set('Cookie', koaSession)
         .expect(200);
 
-      const cookies = res2.headers['set-cookie'][0];
-      assert(cookies.includes('koa.sess='));
+      const cookies = res.get('Set-Cookie')!.join(';');
+      assert.match(cookies, /koa\.sess=/);
       assert.notEqual(cookies, koaSession);
     });
   });

@@ -1,7 +1,10 @@
 {
   "name": "koa-session",
   "description": "Koa cookie session middleware with external store support",
-  "repository": "koajs/session",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:koajs/session.git"
+  },
   "version": "6.4.0",
   "keywords": [
     "koa",
@@ -9,38 +12,70 @@
     "session",
     "cookie"
   ],
-  "files": [
-    "index.js",
-    "lib"
-  ],
   "devDependencies": {
-    "benchmark": "^2.1.4",
-    "eslint": "3",
-    "eslint-config-egg": "3",
-    "istanbul": "0",
+    "@arethetypeswrong/cli": "^0.17.1",
+    "@eggjs/bin": "7",
+    "@eggjs/supertest": "8",
+    "@eggjs/tsconfig": "1",
+    "@types/crc": "^3.8.3",
+    "@types/koa": "^2.15.0",
+    "@types/mocha": "10",
+    "@types/node": "22",
+    "eslint": "8",
+    "eslint-config-egg": "14",
     "koa": "2",
-    "mm": "^2.1.0",
-    "mocha": "^5.2.0",
-    "mz-modules": "^2.0.0",
-    "pedding": "^1.1.0",
-    "should": "8",
-    "supertest": "^3.3.0",
-    "uid-safe": "^2.1.3"
+    "mm": "4",
+    "rimraf": "6",
+    "tshy": "3",
+    "tshy-after": "1",
+    "typescript": "5"
   },
   "license": "MIT",
   "dependencies": {
     "crc": "^3.8.0",
     "debug": "^4.3.3",
-    "is-type-of": "^1.2.1",
-    "uuid": "^8.3.2"
+    "is-type-of": "^2.2.0",
+    "uuid": "^8.3.2",
+    "zod": "^3.24.1"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">= 18.19.0"
   },
   "scripts": {
-    "test": "npm run lint && NODE_ENV=test mocha --exit --require should --reporter spec test/*.test.js",
-    "test-cov": "NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --exit --require should test/*.test.js",
-    "ci": "npm run lint && NODE_ENV=test node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --exit --require should test/*.test.js",
-    "lint": "eslint lib test index.js"
-  }
+    "lint": "eslint --cache src test --ext .ts",
+    "pretest": "npm run clean && npm run lint -- --fix",
+    "test": "egg-bin test",
+    "preci": "npm run clean &&  npm run lint",
+    "ci": "egg-bin cov",
+    "postci": "npm run prepublishOnly && npm run clean",
+    "clean": "rimraf dist",
+    "prepublishOnly": "tshy && tshy-after && attw --pack"
+  },
+  "type": "module",
+  "tshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "types": "./dist/commonjs/index.d.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js"
 }

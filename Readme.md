@@ -2,34 +2,45 @@
 
 [![NPM version][npm-image]][npm-url]
 [![Node.js CI](https://github.com/koajs/session/actions/workflows/nodejs.yml/badge.svg)](https://github.com/koajs/session/actions/workflows/nodejs.yml)
+[![Test coverage][codecov-image]][codecov-url]
+[![Known Vulnerabilities][snyk-image]][snyk-url]
 [![npm download][download-image]][download-url]
+[![Node.js Version](https://img.shields.io/node/v/koajs/session.svg?style=flat)](https://nodejs.org/en/download/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 [npm-image]: https://img.shields.io/npm/v/koa-session.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/koa-session
+[codecov-image]: https://codecov.io/gh/koajs/session/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/koajs/session
+[snyk-image]: https://snyk.io/test/npm/koa-session/badge.svg?style=flat-square
+[snyk-url]: https://snyk.io/test/npm/koa-session
 [download-image]: https://img.shields.io/npm/dm/koa-session.svg?style=flat-square
 [download-url]: https://npmjs.org/package/koa-session
 
- Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
-
- *Requires Node 8.0.0 or greater for async/await support*
+Simple session middleware for Koa. Defaults to cookie-based sessions and supports external stores.
 
 ## Installation
 
-```js
-$ npm install koa-session
+```bash
+npm install koa-session
 ```
 
 ## Notice
 
-6.x changed the default cookie key from `koa:sess` to `koa.sess` to ensure `set-cookie` value valid with HTTP spec.[see issue](https://github.com/koajs/session/issues/28). If you want to be compatible with the previous version, you can manually set `config.key` to `koa:sess`.
+7.x has a breaking change: drop Node.js < 18.19.0 support. And it support CommonJS and ESM both.
+
+6.x changed the default cookie key from `koa:sess` to `koa.sess` to ensure `set-cookie` value valid with HTTP spec.
+[See issue](https://github.com/koajs/session/issues/28).
+If you want to be compatible with the previous version, you can manually set `config.key` to `koa:sess`.
 
 ## Example
 
-  View counter example:
+View counter example:
 
 ```js
-const session = require('koa-session');
-const Koa = require('koa');
+import Koa from 'koa';
+import session from 'koa-session';
+
 const app = new Koa();
 
 app.keys = ['some secret hurr'];
@@ -70,37 +81,34 @@ console.log('listening on port 3000');
 
 ### Options
 
-  The cookie name is controlled by the `key` option, which defaults
-  to "koa.sess". All other options are passed to `ctx.cookies.get()` and
-  `ctx.cookies.set()` allowing you to control security, domain, path,
-  and signing among other settings.
+The cookie name is controlled by the `key` option, which defaults
+to "koa.sess". All other options are passed to `ctx.cookies.get()` and
+`ctx.cookies.set()` allowing you to control security, domain, path,
+and signing among other settings.
 
 #### Custom `encode/decode` Support
 
-  Use `options.encode` and `options.decode` to customize your own encode/decode methods.
+Use `options.encode` and `options.decode` to customize your own encode/decode methods.
 
 ### Hooks
 
-  - `valid()`: valid session value before use it
-  - `beforeSave()`: hook before save session
+- `valid()`: valid session value before use it
+- `beforeSave()`: hook before save session
 
 ### External Session Stores
 
-  The session is stored in a cookie by default, but it has some disadvantages:
+The session is stored in a cookie by default, but it has some disadvantages:
 
-  - Session is stored on client side unencrypted
-  - [Browser cookies always have length limits](http://browsercookielimits.squawky.net/)
-
+- Session is stored on client side unencrypted
+- [Browser cookies always have length limits](http://browsercookielimits.squawky.net/)
 
   You can store the session content in external stores (Redis, MongoDB or other DBs) by passing `options.store` with three methods (these need to be async functions):
 
-  - `get(key, maxAge, { rolling, ctx })`: get session object by key
-  - `set(key, sess, maxAge, { rolling, changed, ctx })`: set session object for key, with a `maxAge` (in ms)
-  - `destroy(key, {ctx})`: destroy session for key
-
+- `get(key, maxAge, { rolling, ctx })`: get session object by key
+- `set(key, sess, maxAge, { rolling, changed, ctx })`: set session object for key, with a `maxAge` (in ms)
+- `destroy(key, {ctx})`: destroy session for key
 
   Once you pass `options.store`, session storage is dependent on your external store -- you can't access the session if your external store is down. **Use external session stores only if necessary, avoid using session as a cache, keep the session lean, and store it in a cookie if possible!**
-
 
   The way of generating external session id is controlled by the `options.genid(ctx)`, which defaults to `uuid.v4()`.
 
@@ -125,7 +133,7 @@ External key is used the cookie by default, but you can use `options.externalKey
 
 ### Session#isNew
 
-  Returns __true__ if the session is new.
+Returns **true** if the session is new.
 
 ```js
 if (this.session.isNew) {
@@ -137,27 +145,27 @@ if (this.session.isNew) {
 
 ### Session#maxAge
 
-  Get cookie's maxAge.
+Get cookie's maxAge.
 
 ### Session#maxAge=
 
-  Set cookie's maxAge.
+Set cookie's maxAge.
 
 ### Session#externalKey
 
-  Get session external key, only exist when external session store present.
+Get session external key, only exist when external session store present.
 
 ### Session#save()
 
-  Save this session no matter whether it is populated.
+Save this session no matter whether it is populated.
 
 ### Session#manuallyCommit()
 
-  Session headers are auto committed by default. Use this if `autoCommit` is set to `false`.
+Session headers are auto committed by default. Use this if `autoCommit` is set to `false`.
 
 ### Destroying a session
 
-  To destroy a session simply set it to `null`:
+To destroy a session simply set it to `null`:
 
 ```js
 this.session = null;
@@ -165,4 +173,10 @@ this.session = null;
 
 ## License
 
-  MIT
+[MIT](LICENSE)
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=koajs/session)](https://github.com/koajs/session/graphs/contributors)
+
+Made with [contributors-img](https://contrib.rocks).

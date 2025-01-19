@@ -1,6 +1,6 @@
 {
-  "extends": "eslint-config-egg",
-  "parserOptions": {
-    "ecmaVersion": 2017
-  }
+  "extends": [
+    "eslint-config-egg/typescript",
+    "eslint-config-egg/lib/rules/enforce-node-prefix"
+  ]
 }

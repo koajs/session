@@ -188,19 +188,23 @@ export function createSession(opts: CreateSessionOptions | any, app: any): Middl
     throw new TypeError('app instance required: `session(opts, app)`');
   }
 
+  const options: SessionOptions = opts ?? {};
+
   // back-compat maxage
-  if (opts && !('maxAge' in opts) && 'maxage' in opts) {
-    Reflect.set(opts, 'maxAge', Reflect.get(opts, 'maxage'));
+  if (!('maxAge' in options) && 'maxage' in options) {
+    Reflect.set(options, 'maxAge', Reflect.get(options, 'maxage'));
     if (process.env.NODE_ENV !== 'production') {
       console.warn('DeprecationWarning: `maxage` option has been renamed to `maxAge`');
     }
   }
-  let options = {
+
+  // keep backwards compatibility: make sure options instance is not mutated
+  Object.assign(options, {
     ...DEFAULT_SESSION_OPTIONS,
-    ...opts,
-  };
+    ...options,
+  });
   SessionOptions.parse(options);
-  options = formatOptions(options);
+  formatOptions(options);
   extendContext(app.context, options);
 
   return async function session(ctx: any, next: any) {
@@ -264,7 +268,6 @@ function formatOptions(opts: SessionOptions) {
       opts.genid = () => randomUUID();
     }
   }
-  return opts;
 }
 
 /**

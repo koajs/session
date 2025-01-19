@@ -11,7 +11,7 @@ const inspect = Symbol.for('nodejs.util.inspect.custom');
 function App(options: CreateSessionOptions = {}) {
   const app = new Koa();
   app.keys = [ 'a', 'b' ];
-  options.store = store;
+  options.store = options.store ?? store;
   app.use(session(options, app));
   return app;
 }
@@ -21,14 +21,15 @@ describe('Koa Session External Store', () => {
 
   describe('when the session contains a ;', () => {
     it('should still work', async () => {
-      const app = App();
+      const options: CreateSessionOptions = { store };
+      const app = App(options);
 
       app.use(async (ctx: Koa.Context) => {
         if (ctx.method === 'POST') {
-          ctx.session!.string = ';';
+          ctx.session.string = ';';
           ctx.status = 204;
         } else {
-          ctx.body = ctx.session!.string;
+          ctx.body = ctx.session.string;
         }
       });
 
@@ -42,6 +43,37 @@ describe('Koa Session External Store', () => {
         .get('/')
         .set('Cookie', cookie.join(';'))
         .expect(';');
+    });
+
+    it('should disable store on options', async () => {
+      const options: CreateSessionOptions = { store };
+      const app = App(options);
+
+      app.use(async (ctx: Koa.Context) => {
+        if (ctx.method === 'POST') {
+          ctx.session.string = ';';
+          ctx.status = 204;
+        } else {
+          ctx.body = ctx.session.string ?? 'new session create';
+        }
+      });
+
+      const server = app.callback();
+      const res = await request(server)
+        .post('/')
+        .expect(204);
+
+      const cookie = res.get('Set-Cookie')!;
+      await request(server)
+        .get('/')
+        .set('Cookie', cookie.join(';'))
+        .expect(';');
+
+      options.store = undefined;
+      await request(server)
+        .get('/')
+        .set('Cookie', cookie.join(';'))
+        .expect('new session create');
     });
   });
 

@@ -1,3 +1,15 @@
+# Changelog
+
+## [7.0.0](https://github.com/koajs/session/compare/v6.4.0...v7.0.0) (2025-01-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop Node.js < 18.19.0 support
+
+### Features
+
+* support cjs and esm both by tshy ([#228](https://github.com/koajs/session/issues/228)) ([575864c](https://github.com/koajs/session/commit/575864c6ae7504da15e72e8112a99757f3eee188))
 
 6.4.0 / 2023-02-04
 ==================

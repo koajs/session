@@ -194,7 +194,7 @@ export function createSession(opts: CreateSessionOptions | any, app: any): Middl
   if (!('maxAge' in options) && 'maxage' in options) {
     Reflect.set(options, 'maxAge', Reflect.get(options, 'maxage'));
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('DeprecationWarning: `maxage` option has been renamed to `maxAge`');
+      console.warn('[koa-session] DeprecationWarning: `maxage` option has been renamed to `maxAge`');
     }
   }
 

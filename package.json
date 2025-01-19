@@ -5,7 +5,7 @@
     "type": "git",
     "url": "git@github.com:koajs/session.git"
   },
-  "version": "7.0.0",
+  "version": "7.0.1",
   "keywords": [
     "koa",
     "middleware",

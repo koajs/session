@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.0.1](https://github.com/koajs/session/compare/v7.0.0...v7.0.1) (2025-01-19)
+
+
+### Bug Fixes
+
+* remove unused dependencies ([#229](https://github.com/koajs/session/issues/229)) ([3421008](https://github.com/koajs/session/commit/3421008381a3aacf2e43d52314749eb850851193))
+
 ## [7.0.0](https://github.com/koajs/session/compare/v6.4.0...v7.0.0) (2025-01-19)
 
 

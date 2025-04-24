@@ -28,6 +28,18 @@ export class ContextSession {
   }
 
   /**
+   * modify cookie options based on request's domain
+   */
+  modifyOptsForRequest(options: SessionOptions) {
+    const opts = { ...options };
+    const ctx = this.ctx;
+    if (typeof opts.domain === 'function') {
+      opts.domain = opts.domain(ctx, ctx.session);
+    }
+    return opts;
+  }
+
+  /**
    * internal logic of `ctx.session`
    * @return {Session} session object
    */
@@ -128,7 +140,7 @@ export class ContextSession {
       debug('decode %j error: %s', cookie, err);
       if (err instanceof Error && !(err instanceof SyntaxError)) {
         // clean this cookie to ensure next request won't throw again
-        ctx.cookies.set(opts.key, '', opts);
+        ctx.cookies.set(opts.key, '', this.modifyOptsForRequest(opts));
         // `ctx.onerror` will unset all headers, and set those specified in err
         Reflect.set(err, 'headers', {
           'set-cookie': ctx.response.get('set-cookie'),
@@ -291,7 +303,7 @@ export class ContextSession {
     const opts = {
       ...this.opts,
       expires: COOKIE_EXP_DATE,
-      maxAge: false,
+      maxAge: 0,
     };
     const ctx = this.ctx;
     const key = opts.key;
@@ -300,7 +312,7 @@ export class ContextSession {
     if (externalKey) {
       await this.store!.destroy(externalKey, { ctx });
     }
-    ctx.cookies.set(key, '', opts);
+    ctx.cookies.set(key, '', this.modifyOptsForRequest(opts));
   }
 
   /**
@@ -340,7 +352,7 @@ export class ContextSession {
       if (opts.externalKey) {
         opts.externalKey.set(this.ctx, externalKey);
       } else {
-        this.ctx.cookies.set(key, externalKey, opts);
+        this.ctx.cookies.set(key, externalKey, this.modifyOptsForRequest(opts));
       }
       return;
     }
@@ -350,6 +362,6 @@ export class ContextSession {
     const base64String = opts.encode(sessionData);
     debug('save session data json base64 format: %s to cookie key: %s with options: %j',
       base64String, key, opts);
-    this.ctx.cookies.set(key, base64String, opts);
+    this.ctx.cookies.set(key, base64String, this.modifyOptsForRequest(opts));
   }
 }

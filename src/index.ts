@@ -157,6 +157,11 @@ export const SessionOptions = z.object({
     .args(z.any(), z.any())
     .returns(z.void())
     .optional(),
+  /**
+   * Restrict the cookie domain with either a static string or a function that
+   * return a string.
+   */
+  domain: z.union([ z.string(), z.function().args(z.any(), z.any()).returns(z.string()) ]).optional(),
 });
 
 const DEFAULT_SESSION_OPTIONS = SessionOptions.parse({});

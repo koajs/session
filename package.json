@@ -21,7 +21,7 @@
     "@types/koa": "^3.0.0",
     "@types/mocha": "10",
     "@types/node": "22",
-    "eslint": "9",
+    "eslint": "8",
     "eslint-config-egg": "14",
     "koa": "3",
     "mm": "4",

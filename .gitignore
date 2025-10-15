@@ -4,3 +4,4 @@ coverage
 .tshy*
 .eslintcache
 dist
+/tsconfig.tsbuildinfo

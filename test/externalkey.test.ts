@@ -12,8 +12,8 @@ function App(options: CreateSessionOptions = {}) {
   app.keys = [ 'a', 'b' ];
   options.store = store;
   options.externalKey = options.externalKey ?? {
-    get: ctx => ctx.get(TOKEN_KEY),
-    set: (ctx, value) => ctx.set(TOKEN_KEY, value),
+    get: (ctx: any) => ctx.get(TOKEN_KEY),
+    set: (ctx: any, value: any) => ctx.set(TOKEN_KEY, value),
   };
   app.use(session(options, app));
   return app;
@@ -28,7 +28,7 @@ describe('Koa Session External Key', () => {
         });
       }, err => {
         assert(err instanceof ZodError);
-        assert.match(err.message, /externalKey/);
+        assert.match(err.message, /expected function, received undefined/);
         return true;
       });
     });

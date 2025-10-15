@@ -1,11 +1,11 @@
 {
-  "name": "koa-session",
+  "name": "@bp/koa-session",
   "description": "Koa cookie session middleware with external store support",
   "repository": {
     "type": "git",
     "url": "git@github.com:koajs/session.git"
   },
-  "version": "7.0.2",
+  "version": "8.0.0",
   "keywords": [
     "koa",
     "middleware",
@@ -13,29 +13,29 @@
     "cookie"
   ],
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.17.1",
+    "@arethetypeswrong/cli": "^0.18.2",
     "@eggjs/bin": "7",
     "@eggjs/supertest": "8",
-    "@eggjs/tsconfig": "1",
-    "@types/crc": "^3.8.3",
-    "@types/koa": "^2.15.0",
+    "@eggjs/tsconfig": "3",
+    "@types/koa": "^3.0.0",
     "@types/mocha": "10",
-    "@types/node": "22",
-    "eslint": "8",
+    "@types/node": "24",
+    "eslint": "9",
     "eslint-config-egg": "14",
-    "koa": "2",
+    "koa": "3",
     "mm": "4",
     "rimraf": "6",
     "snap-shot-it": "^7.9.10",
     "tshy": "3",
     "tshy-after": "1",
-    "typescript": "5"
+    "typescript": "5",
+    "typescript-eslint": "^8.46.1"
   },
   "license": "MIT",
   "dependencies": {
-    "crc": "^3.8.0",
+    "crc": "^4.3.2",
     "is-type-of": "^2.2.0",
-    "zod": "^3.24.1"
+    "zod": "^4.1.12"
   },
   "engines": {
     "node": ">= 18.19.0"
@@ -69,6 +69,9 @@
       }
     },
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "registry": "https://code.tks.eu/api/v4/projects/173/packages/npm/"
   },
   "files": [
     "dist",

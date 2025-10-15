@@ -75,16 +75,22 @@ export const SessionOptions = z.object({
      * get the external key
      * `(ctx) => string`
      */
-    get: z.function()
-      .args(z.any())
-      .returns(z.string()),
+    get: z.function(
+      {
+        input: z.tuple([ z.any() ]),
+        output: z.string(),
+      }
+    ),
     /**
      * set the external key
      * `(ctx, key) => void`
      */
-    set: z.function()
-      .args(z.any(), z.string())
-      .returns(z.void()),
+    set: z.function(
+      {
+        input: z.tuple([ z.any(), z.string() ]),
+        output: z.void(),
+      }
+    ),
   }).optional(),
   /**
    * session storage is dependent on your external store
@@ -94,23 +100,32 @@ export const SessionOptions = z.object({
      * get session data by key
      * `(key, maxAge, { rolling, ctx }) => sessionData | Promise<sessionData>`
      */
-    get: z.function()
-      .args(z.string(), z.number(), z.object({ rolling: z.boolean(), ctx: z.any() }))
-      .returns(z.promise(z.any())),
+    get: z.function(
+      {
+        input: z.tuple([ z.string(), z.number(), z.object({ rolling: z.boolean(), ctx: z.any() }) ]),
+        output: z.promise(z.any()),
+      }
+    ),
     /**
      * set session data for key, with a `maxAge` (in ms)
      * `(key, sess, maxAge, { rolling, changed, ctx }) => void | Promise<void>`
      */
-    set: z.function()
-      .args(z.string(), z.any(), z.number(), z.object({ rolling: z.boolean(), changed: z.boolean(), ctx: z.any() }))
-      .returns(z.promise(z.void())),
+    set: z.function(
+      {
+        input: z.tuple([ z.string(), z.any(), z.number(), z.object({ rolling: z.boolean(), changed: z.boolean(), ctx: z.any() }) ]),
+        output: z.promise(z.void()),
+      }
+    ),
     /**
      * destroy session data for key
      * `(key, { ctx })=> void | Promise<void>`
      */
-    destroy: z.function()
-      .args(z.string(), z.object({ ctx: z.any() }))
-      .returns(z.promise(z.void())),
+    destroy: z.function(
+      {
+        input: z.tuple([ z.string(), z.object({ ctx: z.any() }) ]),
+        output: z.promise(z.void()),
+      }
+    ),
   }).optional(),
   /**
    * If your session store requires data or utilities from context, `opts.ContextStore` is also supported.
@@ -118,23 +133,32 @@ export const SessionOptions = z.object({
    * `new ContextStore(ctx)` will be executed on every request.
    */
   ContextStore: z.any().optional(),
-  encode: z.function()
-    .args(z.any())
-    .returns(z.string())
+  encode: z.function(
+    {
+      input: z.tuple([ z.any() ]),
+      output: z.string(),
+    }
+  )
     .optional()
     .default(() => util.encode),
-  decode: z.function()
-    .args(z.string())
-    .returns(z.any())
+  decode: z.function(
+    {
+      input: z.tuple([ z.string() ]),
+      output: z.any(),
+    }
+  )
     .default(() => util.decode),
   /**
    * If you want to generate a new session id, you can use `genid` option to customize it.
    * Default is a function that uses `randomUUID()`.
    * `(ctx) => string`
    */
-  genid: z.function()
-    .args(z.any())
-    .returns(z.string())
+  genid: z.function(
+    {
+      input: z.tuple([ z.any() ]),
+      output: z.string(),
+    }
+  )
     .optional(),
   /**
    * If you want to prefix the session id, you can use `prefix` option to customize it.
@@ -145,17 +169,23 @@ export const SessionOptions = z.object({
    * valid session value before use it
    * `(ctx, sessionData) => boolean`
    */
-  valid: z.function()
-    .args(z.any(), z.any())
-    .returns(z.any())
+  valid: z.function(
+    {
+      input: z.tuple([ z.any(), z.any() ]),
+      output: z.any(),
+    }
+  )
     .optional(),
   /**
    * hook before save session
    * `(ctx, sessionModel) => void`
    */
-  beforeSave: z.function()
-    .args(z.any(), z.any())
-    .returns(z.void())
+  beforeSave: z.function(
+    {
+      input: z.tuple([ z.any(), z.any() ]),
+      output: z.void(),
+    }
+  )
     .optional(),
 });
 
@@ -167,13 +197,13 @@ export type CreateSessionOptions = Partial<SessionOptions>;
 type Middleware = (ctx: any, next: any) => Promise<void>;
 
 /**
- * Initialize session middleware with `opts`:
+ * Initialize session middleware.
  *
  * - `key` session cookie name ["koa.sess"]
  * - all other options are passed as cookie options
  *
- * @param {Object} [opts] session options
- * @param {Application} app koa application instance
+ * @param {CreateSessionOptions} [opts] Optional session options object
+ * @param {any} app Koa application instance whose context will be extended
  * @public
  */
 export function createSession(opts: CreateSessionOptions, app: any): Middleware;
@@ -228,7 +258,8 @@ export function createSession(opts: CreateSessionOptions | any, app: any): Middl
 export default createSession;
 
 /**
- * format and check session options
+ * Format and validate session options.
+ * @param {SessionOptions} opts Mutable session options object to normalize
  */
 function formatOptions(opts: SessionOptions) {
   // defaults
@@ -271,10 +302,10 @@ function formatOptions(opts: SessionOptions) {
 }
 
 /**
- * extend context prototype, add session properties
+ * Extend Koa context prototype with session helpers.
  *
- * @param  {Object} context koa's context prototype
- * @param  {Object} opts session options
+ * @param {object} context Koa context prototype to decorate
+ * @param {SessionOptions} opts Resolved session options bound to the context
  */
 function extendContext(context: object, opts: SessionOptions) {
   if (context.hasOwnProperty(GET_CONTEXT_SESSION)) {

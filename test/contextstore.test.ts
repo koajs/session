@@ -12,7 +12,7 @@ function App(options: CreateSessionOptions = {}) {
   const app = new Koa();
   app.keys = [ 'a', 'b' ];
   options.ContextStore = ContextStore;
-  options.genid = ctx => {
+  options.genid = (ctx: any) => {
     const sid = Date.now() + '_suffix';
     ctx.state.sid = sid;
     return sid;
@@ -607,10 +607,10 @@ describe('Koa Session External Context Store', () => {
 
       app.keys = [ 'a', 'b' ];
       app.use(session({
-        valid(ctx, sess) {
+        valid(ctx: any, sess: any) {
           return ctx.cookies.get('uid') === sess.uid;
         },
-        beforeSave(ctx, sess) {
+        beforeSave(ctx: any, sess: any) {
           sess.uid = ctx.cookies.get('uid');
         },
         ContextStore,

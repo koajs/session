@@ -5,6 +5,7 @@
     "noImplicitAny": true,
     "target": "ES2022",
     "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "moduleResolution": "NodeNext",
+    "verbatimModuleSyntax": false
   }
 }

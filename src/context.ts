@@ -18,7 +18,9 @@ export class ContextSession {
   prevHash?: number;
 
   /**
-   * context session constructor
+   * Context session constructor.
+   * @param {any} ctx Koa context instance for the current request lifecycle
+   * @param {SessionOptions} opts Resolved session options applied to this context
    */
   constructor(ctx: any, opts: SessionOptions) {
     this.ctx = ctx;
@@ -28,8 +30,8 @@ export class ContextSession {
   }
 
   /**
-   * internal logic of `ctx.session`
-   * @return {Session} session object
+   * Internal logic of `ctx.session` getter.
+   * @return {Session|null} Session object when present, otherwise null
    */
   get(): Session | null {
     // already retrieved
@@ -43,8 +45,8 @@ export class ContextSession {
   }
 
   /**
-   * internal logic of `ctx.session=`
-   * @param {Object} val session object
+   * Internal logic of `ctx.session=` setter.
+   * @param {Record<string, unknown>|null} val Session data object to set, or null to clear session
    */
   set(val: Record<string, unknown> | null) {
     if (val === null) {
@@ -60,10 +62,9 @@ export class ContextSession {
   }
 
   /**
-   * init session from external store
-   * will be called in the front of session middleware
-   *
+   * Initialize session from external store; invoked at middleware entry.
    * @public
+   * @return {Promise<void>}
    */
 
   async initFromExternal() {
@@ -101,8 +102,9 @@ export class ContextSession {
   }
 
   /**
-   * init session from cookie
+   * Initialize session from cookie.
    * @private
+   * @return {void}
    */
   initFromCookie() {
     debug('init from cookie');
@@ -153,10 +155,11 @@ export class ContextSession {
   }
 
   /**
-   * verify session(expired or custom verification)
-   * @param {Object} sessionData session data
-   * @param {Object} [key] session externalKey(optional)
+   * Verify session payload (expiry or custom validation).
+   * @param {Record<string, unknown>} sessionData Parsed session payload from store or cookie
+   * @param {string} [key] Optional external session key when using a store
    * @private
+   * @return {boolean} True if session is valid, false otherwise
    */
   protected valid(sessionData: Record<string, unknown>, key?: string) {
     const ctx = this.ctx;
@@ -182,9 +185,11 @@ export class ContextSession {
   }
 
   /**
-   * @param {String} event event name
-   * @param {Object} data event data
+   * Emit session lifecycle events on the Koa app.
+   * @param {string} event Event name (e.g. "expired", "invalid", "missed")
+   * @param {unknown} data Arbitrary event payload
    * @private
+   * @return {void}
    */
   emit(event: string, data: unknown) {
     setImmediate(() => {
@@ -193,10 +198,10 @@ export class ContextSession {
   }
 
   /**
-   * create a new session and attach to ctx.sess
-   *
-   * @param {Object} [sessionData] session data
-   * @param {String} [externalKey] session external key
+   * Create a new session and attach to the context.
+   * @param {Record<string, unknown>} [sessionData] Optional session data to initialize with
+   * @param {string} [externalKey] Optional external session key (for store-backed sessions)
+   * @return {void}
    */
   protected create(sessionData?: Record<string, unknown>, externalKey?: string) {
     debug('create session with data: %j, externalKey: %s', sessionData, externalKey);
@@ -208,6 +213,10 @@ export class ContextSession {
 
   /**
    * Commit the session changes or removal.
+   * @param {{save?: boolean, regenerate?: boolean}} [root0] Options for commit behavior
+   * @param {boolean} [root0.save] Force save the session regardless of change detection
+   * @param {boolean} [root0.regenerate] Regenerate external key (store-backed) before saving
+   * @return {Promise<void>}
    */
   async commit({ save = false, regenerate = false } = {}) {
     const session = this.session;
@@ -283,8 +292,9 @@ export class ContextSession {
   }
 
   /**
-   * remove session
+   * Remove the current session (cookie and external store if applicable).
    * @private
+   * @return {Promise<void>}
    */
   async remove() {
     // Override the default options so that we can properly expire the session cookies
@@ -304,8 +314,10 @@ export class ContextSession {
   }
 
   /**
-   * save session
+   * Persist session to cookie or external store.
+   * @param {boolean} changed Whether the session content changed since last save
    * @private
+   * @return {Promise<void>}
    */
   async save(changed: boolean) {
     const opts = this.opts;

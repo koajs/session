@@ -762,10 +762,10 @@ describe('Koa Session Cookie', () => {
 
       app.keys = [ 'a', 'b' ];
       app.use(session({
-        valid(ctx, sess) {
+        valid(ctx: any, sess: any) {
           return ctx.cookies.get('uid') === sess.uid;
         },
-        beforeSave(ctx, sess) {
+        beforeSave(ctx: any, sess: any) {
           sess.uid = ctx.cookies.get('uid');
         },
       }, app));

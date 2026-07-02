@@ -208,7 +208,7 @@ export function createSession(opts: CreateSessionOptions | any, app: any): Middl
   extendContext(app.context, options);
 
   return async function session(ctx: any, next: any) {
-    const sess = ctx[GET_CONTEXT_SESSION];
+    const sess: ContextSession = ctx[GET_CONTEXT_SESSION];
     if (sess.store) {
       await sess.initFromExternal();
     }

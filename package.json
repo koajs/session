@@ -31,6 +31,11 @@
     "tshy-after": "1",
     "typescript": "5"
   },
+  "overrides": {
+    "@arethetypeswrong/core": {
+      "fflate": "0.8.2"
+    }
+  },
   "license": "MIT",
   "dependencies": {
     "crc": "^3.8.0",
